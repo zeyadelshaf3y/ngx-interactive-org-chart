@@ -78,7 +78,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   readonly data = input.required<OrgChartNode<T>>();
   readonly collapsible = input<boolean>(true);
   readonly nodeClass = input<string>();
-  readonly isRtl = input<boolean>(true);
+  readonly isRtl = input<boolean>();
 
   readonly config = input<Partial<OrgChartConfig>>({});
 
