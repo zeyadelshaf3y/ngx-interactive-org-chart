@@ -69,7 +69,7 @@
       [class.collapsed]="node.collapsed"
       [class.instant-animation]="true"
       [attr.aria-hidden]="node.collapsed"
-      [@toggleNode]="node.collapsed ? 'collapsed' : 'expanded'"
+      @toggleNode
     >
       @for (child of node.children; track child.id) { @if (!child.hidden) {
       <ng-container
