@@ -104,16 +104,11 @@ npm test
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT © [Zeyad Alshafey](https://github.com/zeyadalshaf3y)
 
-## 🚀 Pro Version
+## � Links
 
-Need more features? Check out our [Pro Version](https://your-website.com/pro) for:
-
-- ✅ Unlimited nodes (free version limited to 50)
-- ✅ Advanced export options (PDF, PNG, SVG)
-- ✅ Custom themes and styling
-- ✅ Search and filtering
-- ✅ Priority support
-
-[Get Pro Version →](https://your-website.com/pro)
+- [NPM Package](https://www.npmjs.com/package/ngx-interactive-org-chart)
+- [Live Demo](https://zeyadalshafey.github.io/ngx-interactive-org-chart)
+- [Documentation](./projects/ngx-interactive-org-chart/README.md)
+- [Issues](https://github.com/zeyadalshaf3y/ngx-interactive-org-chart/issues)
