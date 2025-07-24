@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "pack": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm pack",
-    "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish"
+    "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish",
+    "deploy": "npm run build:demo && cp -r docs/browser/* docs/ && rm -rf docs/browser"
   },
   "private": true,
   "dependencies": {
