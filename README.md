@@ -1,18 +1,34 @@
 # ngx-interactive-org-chart
 
-A modern, interactive Angular organizational chart component with pan/zoom functionality.
+w> Modern Angular organizational chart component with interactive pan/zoom functionality
 
-![npm version](https://img.shields.io/npm/v/ngx-interactive-org-chart)
-![license](https://img.shields.io/npm/l/ngx-interactive-org-chart)
-![downloads](https://img.shields.io/npm/dm/ngx-interactive-org-chart)
+[![npm version](https://img.shields.io/npm/v/ngx-interactive-org-chart)](https://www.npmjs.com/package/ngx-interactive-org-chart)
+[![license](https://img.shields.io/npm/l/ngx-interactive-org-chart)](https://opensource.org/licenses/MIT)
+[![downloads](https://img.shields.io/npm/dm/ngx-interactive-org-chart)](https://www.npmjs.com/package/ngx-interactive-org-chart)
 
-## ✨ Features
+A beautiful, interactive organizational chart component for Angular applications. Built with modern Angular features and designed for ease of use and customization.
 
-- 🎯 **Interactive**: Pan, zoom, and navigate through large organizational structures
-- 🎨 **Customizable**: Flexible styling and theming options
-- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
-- ⚡ **Performance**: Optimized for large datasets
-- 🔧 **Angular 19+**: Built with the latest Angular features
+## 📊 Live Demo
+
+**[View Interactive Demo →](https://zeyadalshafey.github.io/ngx-interactive-org-chart)**
+
+## � Quick Start
+
+```bash
+npm install ngx-interactive-org-chart
+```
+
+For detailed documentation, installation guide, and API reference, see the **[Library Documentation](./projects/ngx-interactive-org-chart/README.md)**.
+
+## 🎯 Repository Structure
+
+```
+├── projects/
+│   ├── ngx-interactive-org-chart/    # � Main library
+│   └── demo/                         # 🎪 Demo application
+├── dist/                             # 📦 Build outputs
+└── docs/                             # 📖 GitHub Pages demo
+```
 - 📦 **Lightweight**: Minimal dependencies
 
 ## 🚀 Quick Start
