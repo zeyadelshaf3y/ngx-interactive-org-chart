@@ -40,3 +40,18 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Business sensitive files (keep private)
+MARKETING_PLAN.md
+DISTRIBUTION_STRATEGY.md
+LICENSING_STRATEGY.md
+BUILD_STRATEGY.md
+PROTECTION_ROADMAP.md
+DISTRIBUTION_GUIDE.md
+NAMING_STRATEGY.md
+GITHUB_SETUP.md
+
+# Keep these private folders if they exist
+/business-docs/
+/internal/
+/strategies/

@@ -1,59 +1,103 @@
-# OrgChartLibWorkspace
+# ngx-interactive-org-chart
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.4.
+A modern, interactive Angular organizational chart component with pan/zoom functionality.
 
-## Development server
+![npm version](https://img.shields.io/npm/v/ngx-interactive-org-chart)
+![license](https://img.shields.io/npm/l/ngx-interactive-org-chart)
+![downloads](https://img.shields.io/npm/dm/ngx-interactive-org-chart)
 
-To start a local development server, run:
+## ✨ Features
 
-```bash
-ng serve
-```
+- 🎯 **Interactive**: Pan, zoom, and navigate through large organizational structures
+- 🎨 **Customizable**: Flexible styling and theming options
+- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
+- ⚡ **Performance**: Optimized for large datasets
+- 🔧 **Angular 19+**: Built with the latest Angular features
+- 📦 **Lightweight**: Minimal dependencies
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🚀 Quick Start
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Installation
 
 ```bash
-ng generate --help
+npm install ngx-interactive-org-chart
 ```
 
-## Building
+### Basic Usage
 
-To build the project run:
+```typescript
+import { Component } from '@angular/core';
+import { OrgChartComponent } from 'ngx-interactive-org-chart';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [OrgChartComponent],
+  template: `
+    <org-chart [data]="orgData" [config]="config"></org-chart>
+  `
+})
+export class DemoComponent {
+  orgData = {
+    id: '1', 
+    name: 'CEO', 
+    title: 'Chief Executive Officer',
+    children: [
+      {
+        id: '2', 
+        name: 'CTO', 
+        title: 'Chief Technology Officer',
+        children: [
+          { id: '3', name: 'Developer', title: 'Senior Developer' }
+        ]
+      }
+    ]
+  };
+
+  config = {
+    connectorColor: '#e2e8f0',
+    nodePadding: '16px',
+    collapsible: true
+  };
+}
+```
+
+## 📋 Requirements
+
+- Angular 19+
+- TypeScript 5.4+
+
+## 🏗️ Development
 
 ```bash
-ng build
+# Clone the repository
+git clone https://github.com/zeyadalshafey/ngx-interactive-org-chart.git
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Build the library
+npm run build:lib
+
+# Run tests
+npm test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 📄 License
 
-## Running unit tests
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## 🚀 Pro Version
 
-```bash
-ng test
-```
+Need more features? Check out our [Pro Version](https://your-website.com/pro) for:
 
-## Running end-to-end tests
+- ✅ Unlimited nodes (free version limited to 50)
+- ✅ Advanced export options (PDF, PNG, SVG)
+- ✅ Custom themes and styling
+- ✅ Search and filtering
+- ✅ Priority support
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[Get Pro Version →](https://your-website.com/pro)

@@ -1,0 +1,188 @@
+# ngx-interactive-org-chart
+
+> Modern Angular organizational chart component with interactive pan/zoom functionality
+
+[![npm version](https://badge.fury.io/js/ngx-interactive-org-chart.svg)](https://badge.fury.io/js/ngx-interactive-org-chart)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://img.shields.io/npm/dm/ngx-interactive-org-chart.svg)](https://www.npmjs.com/package/ngx-interactive-org-chart)
+
+A beautiful, interactive organizational chart component for Angular applications. Built with modern Angular features and designed for ease of use and customization.
+
+## ✨ Features
+
+- 🎯 **Interactive Pan & Zoom** - Smooth navigation with mouse/touch
+- 🌳 **Hierarchical Layout** - Perfect for organizational structures  
+- 🎨 **Customizable Styling** - Fully themeable with CSS/SCSS
+- 📱 **Mobile Friendly** - Touch gestures support
+- ⚡ **High Performance** - Optimized rendering
+- 🔧 **TypeScript Support** - Full type definitions included
+- 🎪 **Angular 19+** - Built with latest Angular features
+- 🆓 **100% Free** - Open source MIT license
+
+## 🚀 Installation
+
+```bash
+npm install ngx-interactive-org-chart
+```
+
+### Setup Angular Animations
+
+The component uses Angular animations for smooth transitions. Add the animations module to your `main.ts`:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(), // Required for ngx-interactive-org-chart
+    // ... your other providers
+  ]
+});
+```
+
+Or if you're using NgModules:
+
+```typescript
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+@NgModule({
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule, // Required for ngx-interactive-org-chart
+    // ... your other modules
+  ],
+  // ...
+})
+export class AppModule { }
+```
+
+## 📖 Usage
+
+### Basic Example
+
+```typescript
+import { Component } from '@angular/core';
+import { OrgChartComponent } from 'ngx-interactive-org-chart';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [OrgChartComponent],
+  template: `
+    <org-chart 
+      [data]="orgData"
+      [collapsible]="true">
+    </org-chart>
+  `
+})
+export class DemoComponent {
+  orgData = {
+    id: 'ceo',
+    name: 'John Smith',
+    title: 'CEO',
+    children: [
+      {
+        id: 'cto',
+        name: 'Jane Doe', 
+        title: 'CTO',
+        children: [
+          {
+            id: 'dev1',
+            name: 'Mike Johnson',
+            title: 'Senior Developer'
+          }
+        ]
+      },
+      {
+        id: 'cfo',
+        name: 'Sarah Wilson',
+        title: 'CFO'
+      }
+    ]
+  };
+}
+```
+
+### Data Structure
+
+The component expects hierarchical data in the following format:
+
+```typescript
+interface OrgNode {
+  id: string;
+  name: string;
+  title: string;
+  children?: OrgNode[];
+}
+```
+
+### Component Options
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | `OrgNode` | required | The organizational data to display |
+| `collapsible` | `boolean` | `false` | Enable/disable node collapsing |
+
+## 🎨 Styling
+
+The component can be styled using CSS/SCSS. Here are the main CSS classes:
+
+```scss
+.org-chart {
+  // Main container
+}
+
+.org-node {
+  // Individual node styling
+}
+
+.org-node-content {
+  // Node content area
+}
+```
+
+## 📊 Live Demo
+
+Check out the interactive demo to see the component in action:
+
+**[View Live Demo →](https://zeyadalshafey.github.io/ngx-interactive-org-chart)**
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## � Issues & Support
+
+If you encounter any issues or have questions:
+
+1. Check the [GitHub Issues](https://github.com/zeyadelshaf3y/ngx-interactive-org-chart/issues)
+2. Create a new issue with a detailed description
+3. Include your Angular version and reproduction steps
+
+## 💝 Support the Project
+
+If this library helps you, consider supporting its development:
+
+- ⭐ Star the repository on GitHub
+- 🐛 Report bugs and suggest features
+- 💝 [Buy me a coffee](https://buymeacoffee.com/zeyadalshafey)
+- 💖 [GitHub Sponsors](https://github.com/sponsors/zeyadelshaf3y)
+
+## 📄 License
+
+MIT © [Zeyad Alshafey](https://github.com/zeyadelshaf3y)
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/zeyadelshaf3y/ngx-interactive-org-chart)
+- [NPM Package](https://www.npmjs.com/package/ngx-interactive-org-chart)
+- [Live Demo](https://zeyadalshafey.github.io/ngx-interactive-org-chart)
+- [Issues](https://github.com/zeyadelshaf3y/ngx-interactive-org-chart/issues)

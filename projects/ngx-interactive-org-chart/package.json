@@ -1,0 +1,40 @@
+{
+  "name": "ngx-interactive-org-chart",
+  "version": "1.0.0",
+  "description": "Modern Angular organizational chart component with interactive pan/zoom functionality and more..",
+  "keywords": [
+    "angular",
+    "organizational-chart",
+    "ngx-interactive-org-chart",
+    "org-chart",
+    "organizational-chart",
+    "hierarchy",
+    "interactive",
+    "panzoom",
+    "typescript",
+    "ngx"
+  ],
+  "author": "Zeyad Alshafey <am6515729@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zeyadelshaf3y/ngx-interactive-org-chart.git"
+  },
+  "homepage": "https://zeyadelshaf3y.github.io/ngx-interactive-org-chart",
+  "bugs": {
+    "url": "https://github.com/zeyadelshaf3y/ngx-interactive-org-chart/issues"
+  },
+  "peerDependencies": {
+    "@angular/animations": "^19.2.0",
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "panzoom": "^9.4.3"
+  },
+  "devDependencies": {
+    "panzoom": "^9.4.3"
+  },
+  "sideEffects": false
+}

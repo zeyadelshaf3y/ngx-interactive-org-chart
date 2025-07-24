@@ -13,6 +13,9 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "paths": {
+      "ngx-interactive-org-chart": ["./dist/ngx-interactive-org-chart"]
+    },
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
