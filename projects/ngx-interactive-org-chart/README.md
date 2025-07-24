@@ -156,7 +156,7 @@ You can add a custom class to each node that will be applied separately or use t
 
 Check out the interactive demo to see the component in action:
 
-**[View Live Demo →](https://zeyadalshafey.github.io/ngx-interactive-org-chart)**
+**[View Live Demo →](https://zeyadelshaf3y.github.io/ngx-interactive-org-chart)**
 
 ## 🤝 Contributing
 
