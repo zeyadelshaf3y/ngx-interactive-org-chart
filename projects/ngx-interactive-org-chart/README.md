@@ -139,12 +139,13 @@ interface OrgChartConfig {
    nodeMaxHeight?: string;
    nodeMinHeight?: string;
 }
+
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `data` | `OrgNode` | required | The organizational data to display |
+| `data` | `OrgChartNode` | required | The organizational data to display |
 | `collapsible` | `boolean` | `true` | Enable/disable node collapsing |
-| `config` | `OrgChartConfig` | default values | Configuration options for the chart appearance and behavior |
-| `nodeClass` | `string` | optional | Custom CSS class will be applied to all nodes |
+| `config` | `OrgChartConfig` | `{}` | Configuration options for styling |
+| `nodeClass` | `string` | `undefined` | Custom CSS class applied to all nodes |
 
 ## 🎨 Styling
 
