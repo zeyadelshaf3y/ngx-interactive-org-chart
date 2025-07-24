@@ -64,41 +64,37 @@ export class AppModule { }
 
 ```typescript
 import { Component } from '@angular/core';
-import { OrgChartComponent } from 'ngx-interactive-org-chart';
+import { NgxInteractiveOrgChart } from 'ngx-interactive-org-chart';
 
 @Component({
   selector: 'app-demo',
   standalone: true,
-  imports: [OrgChartComponent],
+  imports: [NgxInteractiveOrgChart],
   template: `
-    <org-chart 
-      [data]="orgData"
-      [collapsible]="true">
-    </org-chart>
+    <ngx-interactive-org-chart [data]="orgData" [config]="config" />
   `
 })
 export class DemoComponent {
-  orgData = {
-    id: 'ceo',
+  orgData: OrgChartNode = {
+    id: 'ceo', // auto generated if not provided
     name: 'John Smith',
-    title: 'CEO',
+    data: {
+      // add any additional data properties here to customize the node and use it for displaying different types of nodes
+    },
     children: [
       {
         id: 'cto',
-        name: 'Jane Doe', 
-        title: 'CTO',
+        name: 'Jane Doe',
         children: [
           {
             id: 'dev1',
-            name: 'Mike Johnson',
-            title: 'Senior Developer'
+            name: 'Mike Johnson'
           }
         ]
       },
       {
         id: 'cfo',
-        name: 'Sarah Wilson',
-        title: 'CFO'
+        name: 'Sarah Wilson'
       }
     ]
   };
@@ -110,38 +106,49 @@ export class DemoComponent {
 The component expects hierarchical data in the following format:
 
 ```typescript
-interface OrgNode {
-  id: string;
-  name: string;
-  title: string;
-  children?: OrgNode[];
+interface OrgNode<T> {
+   id?: string;
+   name?: string;
+   data?: T;
+   children?: OrgChartNode[];
+   collapsed?: boolean;
+   hidden?: boolean;
+   nodeClass?: string;
 }
 ```
 
 ### Component Options
 
+```typescript
+interface OrgChartConfig {
+   connectorsAnimationDelay?: string;
+   animationDuration?: string;
+   collapseDuration?: string;
+   nodePadding?: string;
+   nodeContainerSpacing?: string;
+   nodeBorderRadius?: string;
+   nodeActiveBorderColor?: string;
+   connectorColor?: string;
+   connectorBorderRadius?: string;
+   connectorActiveColor?: string;
+   connectorWidth?: string;
+   collapseButtonSize?: string;
+   collapseButtonBorderRadius?: string;
+   nodeMaxWidth?: string;
+   nodeMinWidth?: string;
+   nodeMaxHeight?: string;
+   nodeMinHeight?: string;
+}
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `data` | `OrgNode` | required | The organizational data to display |
-| `collapsible` | `boolean` | `false` | Enable/disable node collapsing |
+| `collapsible` | `boolean` | `true` | Enable/disable node collapsing |
+| `config` | `OrgChartConfig` | default values | Configuration options for the chart appearance and behavior |
+| `nodeClass` | `string` | optional | Custom CSS class will be applied to all nodes |
 
 ## 🎨 Styling
 
-The component can be styled using CSS/SCSS. Here are the main CSS classes:
-
-```scss
-.org-chart {
-  // Main container
-}
-
-.org-node {
-  // Individual node styling
-}
-
-.org-node-content {
-  // Node content area
-}
-```
+You can add a custom class to each node that will be applied separately or use the `nodeClass` input that will be applied to all nodes.
 
 ## 📊 Live Demo
 
@@ -154,12 +161,12 @@ Check out the interactive demo to see the component in action:
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
 1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing-feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## � Issues & Support
+## 🤖 Issues & Support
 
 If you encounter any issues or have questions:
 

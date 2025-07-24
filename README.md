@@ -43,37 +43,39 @@ npm install ngx-interactive-org-chart
 
 ```typescript
 import { Component } from '@angular/core';
-import { OrgChartComponent } from 'ngx-interactive-org-chart';
+import { NgxInteractiveOrgChart } from 'ngx-interactive-org-chart';
 
 @Component({
   selector: 'app-demo',
   standalone: true,
-  imports: [OrgChartComponent],
+  imports: [NgxInteractiveOrgChart],
   template: `
-    <org-chart [data]="orgData" [config]="config"></org-chart>
+    <ngx-interactive-org-chart [data]="orgData" [config]="config" />
   `
 })
 export class DemoComponent {
-  orgData = {
-    id: '1', 
-    name: 'CEO', 
-    title: 'Chief Executive Officer',
+  orgData: OrgChartNode = {
+    id: 'ceo', // auto generated if not provided
+    name: 'John Smith',
+    data: {
+      // add any additional data properties here to customize the node and use it for displaying different types of nodes
+    },
     children: [
       {
-        id: '2', 
-        name: 'CTO', 
-        title: 'Chief Technology Officer',
+        id: 'cto',
+        name: 'Jane Doe',
         children: [
-          { id: '3', name: 'Developer', title: 'Senior Developer' }
+          {
+            id: 'dev1',
+            name: 'Mike Johnson'
+          }
         ]
+      },
+      {
+        id: 'cfo',
+        name: 'Sarah Wilson'
       }
     ]
-  };
-
-  config = {
-    connectorColor: '#e2e8f0',
-    nodePadding: '16px',
-    collapsible: true
   };
 }
 ```
