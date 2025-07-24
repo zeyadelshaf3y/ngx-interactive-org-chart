@@ -193,5 +193,5 @@ MIT © [Zeyad Alshafey](https://github.com/zeyadelshaf3y)
 
 - [GitHub Repository](https://github.com/zeyadelshaf3y/ngx-interactive-org-chart)
 - [NPM Package](https://www.npmjs.com/package/ngx-interactive-org-chart)
-- [Live Demo](https://zeyadalshafey.github.io/ngx-interactive-org-chart)
+- [Live Demo](https://zeyadelshaf3y.github.io/ngx-interactive-org-chart)
 - [Issues](https://github.com/zeyadelshaf3y/ngx-interactive-org-chart/issues)
