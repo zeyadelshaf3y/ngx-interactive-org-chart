@@ -139,6 +139,7 @@ interface OrgChartConfig {
    nodeMaxHeight?: string;
    nodeMinHeight?: string;
 }
+```
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
