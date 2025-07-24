@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "npm run build:lib && npm run build:demo",
     "build:lib": "ng build ngx-interactive-org-chart --configuration production",
-    "build:demo": "ng build demo --configuration production --output-path docs",
+    "build:demo": "ng build demo --configuration production --output-path docs --base-href /ngx-interactive-org-chart/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "pack": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm pack",
