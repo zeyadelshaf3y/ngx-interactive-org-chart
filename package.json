@@ -6,12 +6,12 @@
     "start": "ng serve",
     "build": "npm run build:lib && npm run build:demo",
     "build:lib": "ng build ngx-interactive-org-chart --configuration production",
-    "build:demo": "ng build demo --configuration production",
+    "build:demo": "ng build demo --configuration production --output-path docs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "pack": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm pack",
     "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish",
-    "deploy": "npm run build:demo && npx angular-cli-ghpages --dir=dist/demo"
+    "deploy": "npm run build:demo && cp -r docs/browser/* docs/ && rm -rf docs/browser"
   },
   "private": true,
   "dependencies": {
