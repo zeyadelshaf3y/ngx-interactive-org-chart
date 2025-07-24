@@ -10,7 +10,7 @@ A beautiful, interactive organizational chart component for Angular applications
 
 ## 📊 Live Demo
 
-**[View Interactive Demo →](https://zeyadalshaf3y.github.io/ngx-interactive-org-chart)**
+**[View Interactive Demo →](https://zeyadelshaf3y.github.io/ngx-interactive-org-chart)**
 
 ## � Quick Start
 
