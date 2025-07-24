@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "pack": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm pack",
-    "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish"
+    "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish",
+    "deploy": "npm run build:demo && npx angular-cli-ghpages --dir=dist/demo"
   },
   "private": true,
   "dependencies": {
@@ -22,6 +23,7 @@
     "@angular/platform-browser": "^19.0.0",
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
+    "panzoom": "^9.4.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -31,6 +33,7 @@
     "@angular/cli": "^19.0.4",
     "@angular/compiler-cli": "^19.0.0",
     "@types/jasmine": "~5.1.0",
+    "angular-cli-ghpages": "^2.0.3",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
