@@ -1,6 +1,6 @@
 # ngx-interactive-org-chart
 
-w> Modern Angular organizational chart component with interactive pan/zoom functionality
+> Modern Angular organizational chart component with interactive pan/zoom functionality
 
 [![npm version](https://img.shields.io/npm/v/ngx-interactive-org-chart)](https://www.npmjs.com/package/ngx-interactive-org-chart)
 [![license](https://img.shields.io/npm/l/ngx-interactive-org-chart)](https://opensource.org/licenses/MIT)
