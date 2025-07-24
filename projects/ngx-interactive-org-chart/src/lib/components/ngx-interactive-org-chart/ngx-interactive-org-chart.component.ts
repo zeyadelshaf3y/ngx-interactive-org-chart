@@ -78,6 +78,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   readonly data = input.required<OrgChartNode<T>>();
   readonly collapsible = input<boolean>(true);
   readonly nodeClass = input<string>();
+  readonly initialCollapsed = input<boolean>();
   readonly isRtl = input<boolean>();
 
   readonly config = input<Partial<OrgChartConfig>>({});
@@ -144,9 +145,10 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   private readonly setNodes = effect(() => {
     const data = this.data();
+    const initialCollapsed = this.initialCollapsed();
 
     if (data) {
-      this.nodes.set(mapNodesRecursively(data));
+      this.nodes.set(mapNodesRecursively(data, initialCollapsed));
     }
   });
 

@@ -12,7 +12,7 @@ import {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  readonly data: OrgChartNode = this.generateMockTree(6, 2);
+  readonly data: OrgChartNode = this.generateMockTree(5, 2);
 
   generateMockTree(maxDepth: number, maxChildren: number): OrgChartNode {
     let currentId = 1;
