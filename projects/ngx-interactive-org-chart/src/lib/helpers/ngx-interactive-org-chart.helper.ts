@@ -42,15 +42,18 @@ function setCollapseRecursively<T>(
   };
 }
 
-export function mapNodesRecursively<T>(node: OrgChartNode<T>): OrgChartNode<T> {
+export function mapNodesRecursively<T>(
+  node: OrgChartNode<T>,
+  collapsed?: boolean,
+): OrgChartNode<T> {
   return {
     ...node,
     id: node.id ?? crypto.randomUUID(),
-    collapsed: node.collapsed ?? false,
+    collapsed: collapsed ? collapsed : node.collapsed ?? false,
     hidden: node.hidden ?? false,
     children:
       node.children?.map((child) =>
-        mapNodesRecursively(child as OrgChartNode<T>),
+        mapNodesRecursively(child as OrgChartNode<T>, collapsed),
       ) || [],
   };
 }
