@@ -1,0 +1,19 @@
+<div class="btn-container">
+  <app-icon name="sun" class="sun-icon" />
+  <label class="switch btn-color-mode-switch">
+    <input
+      [checked]="isDarkMode()"
+      (change)="isDarkMode.set(!isDarkMode())"
+      id="color_mode"
+      name="color_mode"
+      type="checkbox"
+    />
+    <label
+      class="btn-color-mode-switch-inner"
+      data-off="Light"
+      data-on="Dark"
+      for="color_mode"
+    ></label>
+  </label>
+  <app-icon name="moon-stars" class="moon-stars-icon" />
+</div>

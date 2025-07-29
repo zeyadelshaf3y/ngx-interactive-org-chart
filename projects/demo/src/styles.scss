@@ -1,9 +1,35 @@
+@use "variables" as *;
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  background-color: var(--bg-primary);
+  font-family: "Montserrat", sans-serif;
   margin: 0;
   padding: 0;
+  color: var(--text-primary);
+
+  scrollbar-color: var(--border-2) var(--bg-primary);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--surface-muted);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--bg-primary);
+  }
+}
+
+@for $i from 1 through 6 {
+  h#{$i} {
+    line-height: 1.5;
+    margin: 0;
+  }
 }

@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgStyle, NgTemplateOutlet } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -13,18 +13,19 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
-import { OrgChartConfig, OrgChartNode } from '../../models';
+import { NgxInteractiveOrgChartTheme, OrgChartNode } from '../../models';
 import { mapNodesRecursively, toggleNodeCollapse } from '../../helpers';
 
 import createPanZoom, { PanZoom } from 'panzoom';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { DEFAULT_THEME_OPTIONS } from './default-theme-options';
 
 const RESET_DELAY = 300; // ms
 
 @Component({
   standalone: true,
   selector: 'ngx-interactive-org-chart',
-  imports: [NgTemplateOutlet, NgClass],
+  imports: [NgTemplateOutlet, NgClass, NgStyle],
   templateUrl: './ngx-interactive-org-chart.component.html',
   styleUrls: ['./ngx-interactive-org-chart.component.scss'],
   animations: [
@@ -33,42 +34,71 @@ const RESET_DELAY = 300; // ms
         style({ width: '0', height: '0', opacity: 0 }),
         animate(
           '300ms ease-out',
-          style({ width: '*', height: '*', opacity: 1 }),
+          style({ width: '*', height: '*', opacity: 1 })
         ),
       ]),
       transition(':leave', [
         style({ width: '*', height: '*' }),
         animate(
           '300ms ease-out',
-          style({ width: '0', height: '0', opacity: 0 }),
+          style({ width: '0', height: '0', opacity: 0 })
         ),
       ]),
     ]),
   ],
   host: {
-    '[style.--base-delay]': 'finalConfig().connectorsAnimationDelay',
-    '[style.--animation-duration]': 'finalConfig().animationDuration',
-    '[style.--collapse-duration]': 'finalConfig().collapseDuration',
-    '[style.--node-padding]': 'finalConfig().nodePadding',
-    '[style.--node-container-spacing]': 'finalConfig().nodeContainerSpacing',
-    '[style.--node-border-radius]': 'finalConfig().nodeBorderRadius',
-    '[style.--connector-color]': 'finalConfig().connectorColor',
-    '[style.--connector-border-radius]': 'finalConfig().connectorBorderRadius',
-    '[style.--connector-active-color]': 'finalConfig().connectorActiveColor',
-    '[style.--connector-width]': 'finalConfig().connectorWidth',
-    '[style.--collapse-button-size]': 'finalConfig().collapseButtonSize',
+    '[style.--node-background]': 'finalThemeOptions().node.background',
+    '[style.--node-color]': 'finalThemeOptions().node.color',
+    '[style.--node-shadow]': 'finalThemeOptions().node.shadow',
+    '[style.--node-outline-color]': 'finalThemeOptions().node.outlineColor',
+    '[style.--node-outline-width]': 'finalThemeOptions().node.outlineWidth',
+    '[style.--node-active-outline-color]':
+      'finalThemeOptions().node.activeOutlineColor',
+    '[style.--node-highlight-shadow-color]':
+      'finalThemeOptions().node.highlightShadowColor',
+    '[style.--node-padding]': 'finalThemeOptions().node.padding',
+    '[style.--node-border-radius]': 'finalThemeOptions().node.borderRadius',
+    '[style.--node-active-color]': 'finalThemeOptions().node.activeColor',
+    '[style.--node-max-width]': 'finalThemeOptions().node.maxWidth',
+    '[style.--node-min-width]': 'finalThemeOptions().node.minWidth',
+    '[style.--node-max-height]': 'finalThemeOptions().node.maxHeight',
+    '[style.--node-min-height]': 'finalThemeOptions().node.minHeight',
+    '[style.--connector-color]': 'finalThemeOptions().connector.color',
+    '[style.--connector-active-color]':
+      'finalThemeOptions().connector.activeColor',
+    '[style.--connector-border-radius]':
+      'finalThemeOptions().connector.borderRadius',
+    '[style.--node-container-spacing]':
+      'finalThemeOptions().node.containerSpacing',
+    '[style.--connector-width]': 'finalThemeOptions().connector.width',
+    '[style.--collapse-button-size]': 'finalThemeOptions().collapseButton.size',
+    '[style.--collapse-button-border-color]':
+      'finalThemeOptions().collapseButton.borderColor',
     '[style.--collapse-button-border-radius]':
-      'finalConfig().collapseButtonBorderRadius',
-    '[style.--node-active-border-color]':
-      'finalConfig().nodeActiveBorderColor ?? finalConfig().connectorColor',
-    '[style.--node-max-width]': 'finalConfig().nodeMaxWidth',
-    '[style.--node-min-width]': 'finalConfig().nodeMinWidth',
-    '[style.--node-max-height]': 'finalConfig().nodeMaxHeight',
-    '[style.--node-min-height]': 'finalConfig().nodeMinHeight',
+      'finalThemeOptions().collapseButton.borderRadius',
+    '[style.--collapse-button-color]':
+      'finalThemeOptions().collapseButton.color',
+    '[style.--collapse-button-background]':
+      'finalThemeOptions().collapseButton.background',
+    '[style.--collapse-button-hover-color]':
+      'finalThemeOptions().collapseButton.hoverColor',
+    '[style.--collapse-button-hover-background]':
+      'finalThemeOptions().collapseButton.hoverBackground',
+    '[style.--collapse-button-hover-shadow]':
+      'finalThemeOptions().collapseButton.hoverShadow',
+    '[style.--collapse-button-hover-transform-scale]':
+      'finalThemeOptions().collapseButton.hoverTransformScale',
+    '[style.--collapse-button-focus-outline]':
+      'finalThemeOptions().collapseButton.focusOutline',
+    '[style.--collapse-button-count-font-size]':
+      'finalThemeOptions().collapseButton.countFontSize',
+    '[style.--container-background]':
+      'finalThemeOptions().container.background',
+    '[style.--container-border]': 'finalThemeOptions().container.border',
   },
 })
 export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
-  readonly elementRef = inject(ElementRef);
+  readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   @ContentChild('nodeTemplate', { static: false })
   protected readonly customNodeTemplate?: TemplateRef<unknown>;
@@ -76,41 +106,49 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   readonly panZoomContainer = viewChild<ElementRef>('panZoomContainer');
 
   readonly data = input.required<OrgChartNode<T>>();
+  readonly initialZoom = input<number>();
+  readonly minZoom = input<number>(0.1);
+  readonly maxZoom = input<number>(5);
+  readonly zoomSpeed = input<number>(1);
+  readonly zoomDoubleClickSpeed = input<number>(2);
   readonly collapsible = input<boolean>(true);
   readonly nodeClass = input<string>();
   readonly initialCollapsed = input<boolean>();
   readonly isRtl = input<boolean>();
+  readonly displayChildrenCount = input<boolean>(true);
 
-  readonly config = input<Partial<OrgChartConfig>>({});
+  readonly themeOptions = input<NgxInteractiveOrgChartTheme>();
 
-  // Default configuration
-  private readonly defaultConfig: OrgChartConfig = {
-    connectorsAnimationDelay: '100ms',
-    animationDuration: '500ms',
-    collapseDuration: '300ms',
-    nodePadding: '20px',
-    nodeContainerSpacing: '20px',
-    nodeBorderRadius: '8px',
-    connectorColor: 'var(--gray-300)',
-    connectorBorderRadius: '10px',
-    connectorActiveColor: 'var(--active-color)',
-    connectorWidth: '1.5px',
-    collapseButtonSize: '20px',
-    collapseButtonBorderRadius: '0.25rem',
-    nodeActiveBorderColor: 'var(--active-color)',
-    nodeMaxWidth: 'auto',
-    nodeMinWidth: 'auto',
-    nodeMaxHeight: 'auto',
-    nodeMinHeight: 'auto',
-  };
+  private readonly defaultThemeOptions: NgxInteractiveOrgChartTheme =
+    DEFAULT_THEME_OPTIONS;
 
-  protected panZoomInstance: PanZoom | null = null;
+  // FIXME: back to protected
+  panZoomInstance: PanZoom | null = null;
 
-  protected readonly finalConfig = computed<OrgChartConfig>(() => {
-    const userConfig = this.config();
+  protected readonly finalThemeOptions = computed<NgxInteractiveOrgChartTheme>(
+    () => {
+      const themeOptions = this.themeOptions();
 
-    return { ...this.defaultConfig, ...userConfig };
-  });
+      return {
+        node: {
+          ...this.defaultThemeOptions.node,
+          ...themeOptions?.node,
+        },
+        connector: {
+          ...this.defaultThemeOptions.connector,
+          ...themeOptions?.connector,
+        },
+        collapseButton: {
+          ...this.defaultThemeOptions.collapseButton,
+          ...themeOptions?.collapseButton,
+        },
+        container: {
+          ...this.defaultThemeOptions.container,
+          ...themeOptions?.container,
+        },
+      };
+    }
+  );
 
   protected readonly nodes = signal<OrgChartNode<T> | null>(null);
 
@@ -171,12 +209,19 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.panZoomInstance = createPanZoom(container, {
       autocenter: true,
       bounds: true,
+      initialZoom: this.initialZoom(),
       enableTextSelection: false,
-      minZoom: 0.1,
-      maxZoom: 5,
-      zoomSpeed: 1,
+      minZoom: this.minZoom(),
+      maxZoom: this.maxZoom(),
+      zoomSpeed: this.zoomSpeed(),
       smoothScroll: true,
-      zoomDoubleClickSpeed: 2,
+      zoomDoubleClickSpeed: this.zoomDoubleClickSpeed(),
+    });
+
+    this.calculateScale();
+
+    this.panZoomInstance?.on('zoom', e => {
+      this.calculateScale();
     });
   }
 
@@ -189,7 +234,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    * If false, zooms to an absolute scale.
    */
   zoomIn(
-    { by, relative }: { by?: number; relative?: boolean } = { relative: true },
+    { by, relative }: { by?: number; relative?: boolean } = { relative: true }
   ): void {
     this.zoom({ type: 'in', by, relative });
   }
@@ -203,7 +248,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    * If false, zooms to an absolute scale.
    */
   zoomOut(
-    { by, relative }: { by?: number; relative?: boolean } = { relative: true },
+    { by, relative }: { by?: number; relative?: boolean } = { relative: true }
   ): void {
     this.zoom({ type: 'out', by, relative });
   }
@@ -212,18 +257,18 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    * Highlights a specific node in the org chart and pans to it.
    * @param {string} nodeId - The ID of the node to highlight.
    */
-  highlightNode(nodeId: string): void {
+  highlightNode(nodeId: string | number): void {
     this.toggleCollapseAll(false);
 
     setTimeout(() => {
       const nodeElement = this.elementRef?.nativeElement.querySelector(
-        `#${this.getNodeId(nodeId)}`,
+        `#${this.getNodeId(nodeId)}`
       ) as HTMLElement;
 
       this.panZoomToNode({
         nodeElement,
       });
-    }, 10);
+    }, 200);
   }
 
   /**
@@ -239,13 +284,13 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     }
 
     const containerRect = container.getBoundingClientRect();
-    const hostingElement = this.elementRef.nativeElement as HTMLElement;
+    const hostingElement = this.elementRef.nativeElement;
     const windowWidth = hostingElement.getBoundingClientRect().width;
     const windowHeight = hostingElement.getBoundingClientRect().height;
 
     this.panZoomInstance?.smoothMoveTo(
       (-1 * containerRect.width) / 2 + windowWidth / 2,
-      (-1 * containerRect.height) / 2 + windowHeight / 2,
+      (-1 * containerRect.height) / 2 + windowHeight / 2
     );
   }
 
@@ -337,7 +382,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
             wasCollapsed
               ? this.getNodeChildrenId(nodeId)
               : this.getNodeId(nodeId)
-          }`,
+          }`
         ) as HTMLElement;
 
         this.panZoomToNode({
@@ -360,12 +405,16 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   }): void {
     const containerEl = this.panZoomContainer()?.nativeElement;
     const containerRect = containerEl.getBoundingClientRect();
+    const hostElement = this.elementRef?.nativeElement;
+    const hostElementRect = hostElement.getBoundingClientRect();
     const { scale } = this.panZoomInstance?.getTransform() ?? {
       scale: 1,
     };
 
-    const centerX = containerRect.width / 2 + containerRect.x;
-    const centerY = containerRect.height / 2 + containerRect.y;
+    const centerX =
+      containerRect.width / 2 + containerRect.x - hostElementRect.x;
+    const centerY =
+      containerRect.height / 2 + containerRect.y - hostElementRect.y;
 
     const newScale = relative
       ? type === 'in'
@@ -391,15 +440,26 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const nodeRect1 = nodeElement.getBoundingClientRect();
+    const highlightedElements = container.querySelectorAll('.highlighted');
+    highlightedElements.forEach(el => {
+      el.classList.remove('highlighted');
+    });
 
-    if (!skipZoom) {
-      this.panZoomInstance?.smoothZoomAbs(
-        nodeRect1.x + nodeRect1.width / 2,
-        nodeRect1.y + nodeRect1.height / 2,
-        1.5,
-      );
-    }
+    this.panZoomInstance?.pause();
+    this.panZoomInstance?.resume();
+
+    setTimeout(() => {
+      const hostElementRect =
+        this.elementRef.nativeElement.getBoundingClientRect();
+
+      const nodeRect1 = nodeElement.getBoundingClientRect();
+      const clientX = nodeRect1.x - nodeRect1.width / 2 - hostElementRect.x;
+      const clientY = nodeRect1.y - nodeRect1.height / 2 - hostElementRect.y;
+
+      if (!skipZoom) {
+        this.panZoomInstance?.smoothZoomAbs(clientX, clientY, 1.5);
+      }
+    }, 10);
 
     setTimeout(() => {
       const containerRect = container.getBoundingClientRect();
@@ -413,11 +473,10 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
       const windowCenterX = windowWidth / 2;
       const windowCenterY = windowHeight / 2;
+      const x = transformedNodeX + windowCenterX - nodeRect.width / 2;
+      const y = transformedNodeY + windowCenterY - nodeRect.height / 2;
 
-      this.panZoomInstance?.smoothMoveTo(
-        transformedNodeX + windowCenterX - nodeRect.width / 2,
-        transformedNodeY + windowCenterY - nodeRect.height / 2,
-      );
+      this.panZoomInstance?.smoothMoveTo(x, y);
 
       if (playAnimation) {
         nodeElement.classList.add('highlighted');
@@ -425,15 +484,33 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
           nodeElement.classList.remove('highlighted');
         }, 2300);
       }
-    }, 100); // allow some time for the zoom to take effect
+    }, 200); // allow some time for the zoom to take effect
   }
 
-  protected getNodeId(nodeId: string): string {
+  protected getNodeId(nodeId: string | number): string {
     return `node-${nodeId}`;
   }
 
-  protected getNodeChildrenId(nodeId: string): string {
+  protected getNodeChildrenId(nodeId: string | number): string {
     return `node-children-${nodeId}`;
+  }
+
+  private calculateScale(): void {
+    const transform = this.panZoomInstance?.getTransform();
+    const currentScale = transform?.scale ?? 0;
+
+    const minZoom = this.minZoom();
+    const maxZoom = this.maxZoom();
+
+    if (minZoom === maxZoom) {
+      this.scale.set(0);
+      return;
+    }
+
+    const ratio = (currentScale - minZoom) / (maxZoom - minZoom);
+    const scalePercentage = Math.round(ratio * 10000) / 100;
+
+    this.scale.set(scalePercentage);
   }
 
   private getFitScale(padding: number): number {
@@ -447,8 +524,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     const containerHeight = containerRect.height;
 
     // Use actual unscaled dimensions of content
-    const contentWidth = contentEl.offsetWidth;
-    const contentHeight = contentEl.offsetHeight;
+    const contentWidth = contentEl.clientWidth;
+    const contentHeight = contentEl.clientHeight;
 
     // Optional padding around the content
     const availableWidth = containerWidth - padding * 2;

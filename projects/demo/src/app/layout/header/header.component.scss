@@ -1,0 +1,46 @@
+.header {
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+  }
+
+  &__links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 968px) {
+  .header {
+    &__logo {
+      &-text {
+        font-size: 0.75rem;
+      }
+    }
+
+    &__links {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    &__links {
+      display: flex;
+    }
+  }
+}

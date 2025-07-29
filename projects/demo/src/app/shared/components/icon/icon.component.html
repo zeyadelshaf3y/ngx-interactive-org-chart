@@ -1,0 +1,11 @@
+@if (name()) {
+  <svg
+    [attr.width]="sizePx()"
+    [attr.height]="sizePx()"
+    aria-hidden="true"
+    class="icon"
+    [ngClass]="getClasses()"
+  >
+    <use [attr.xlink:href]="iconPath()"></use>
+  </svg>
+}

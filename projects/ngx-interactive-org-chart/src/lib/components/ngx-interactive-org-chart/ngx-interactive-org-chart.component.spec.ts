@@ -39,10 +39,6 @@ describe('NgxInteractiveOrgChart', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have default configuration', () => {
-    expect(component.config()).toBeDefined();
-  });
-
   it('should receive data input', () => {
     expect(component.data()).toEqual(hostComponent.testData);
   });

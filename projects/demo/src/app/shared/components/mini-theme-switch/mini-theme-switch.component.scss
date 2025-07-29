@@ -1,0 +1,44 @@
+.toggle {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.input {
+  display: none;
+}
+
+.icon {
+  grid-column: 1 / 1;
+  grid-row: 1 / 1;
+  transition: transform 500ms;
+  line-height: 0.1;
+}
+
+.icon--moon {
+  transition-delay: 200ms;
+}
+
+#switch {
+  &:focus-visible {
+    & ~ .icon {
+      outline: 2px solid var(--text-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.icon--sun {
+  transform: scale(0);
+}
+
+#switch:checked + .icon--moon {
+  transform: rotate(360deg) scale(0);
+}
+
+#switch:checked ~ .icon--sun {
+  transition-delay: 200ms;
+  transform: scale(1) rotate(360deg);
+}

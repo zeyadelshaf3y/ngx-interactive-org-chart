@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+docs/
+.angular/
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Generated files
+*.d.ts
+
+# Package files
+*.tgz
+*.tar.gz
+
+# Log files
+*.log
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Angular specific
+.angular/
+.nx/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

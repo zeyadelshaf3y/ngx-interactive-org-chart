@@ -11,8 +11,8 @@ export function toggleNodeCollapse<T>({
     return {
       ...node,
       collapsed: newCollapse,
-      children: node.children?.map((child) =>
-        setCollapseRecursively(child, newCollapse),
+      children: node.children?.map(child =>
+        setCollapseRecursively(child, newCollapse)
       ),
     };
   }
@@ -20,8 +20,8 @@ export function toggleNodeCollapse<T>({
   if (node.children?.length) {
     return {
       ...node,
-      children: node.children.map((child) =>
-        toggleNodeCollapse({ node: child, targetNode, collapse }),
+      children: node.children.map(child =>
+        toggleNodeCollapse({ node: child, targetNode, collapse })
       ),
     };
   }
@@ -31,29 +31,37 @@ export function toggleNodeCollapse<T>({
 
 function setCollapseRecursively<T>(
   node: OrgChartNode<T>,
-  collapse: boolean,
+  collapse: boolean
 ): OrgChartNode<T> {
   return {
     ...node,
     collapsed: collapse,
-    children: node.children?.map((child) =>
-      setCollapseRecursively(child, collapse),
+    children: node.children?.map(child =>
+      setCollapseRecursively(child, collapse)
     ),
   };
 }
 
 export function mapNodesRecursively<T>(
   node: OrgChartNode<T>,
-  collapsed?: boolean,
+  collapsed?: boolean
 ): OrgChartNode<T> {
+  const mappedChildren =
+    node.children?.map(child =>
+      mapNodesRecursively(child as OrgChartNode<T>, collapsed)
+    ) || [];
+
+  const descendantsCount = mappedChildren.reduce(
+    (acc, child) => acc + 1 + (child.descendantsCount ?? 0),
+    0
+  );
+
   return {
     ...node,
     id: node.id ?? crypto.randomUUID(),
-    collapsed: collapsed ? collapsed : node.collapsed ?? false,
+    collapsed: collapsed ?? node.collapsed ?? false,
     hidden: node.hidden ?? false,
-    children:
-      node.children?.map((child) =>
-        mapNodesRecursively(child as OrgChartNode<T>, collapsed),
-      ) || [],
+    children: mappedChildren,
+    descendantsCount,
   };
 }

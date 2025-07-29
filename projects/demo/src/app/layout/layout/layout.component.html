@@ -1,0 +1,28 @@
+<main class="layout">
+  <nav class="layout__sidebar">
+    <app-sidebar [isDarkMode]="isDarkMode()" (toggleTheme)="toggleTheme()" />
+  </nav>
+
+  <nav class="layout__sidebar-overlay" [class.visible]="isSidebarOpen()">
+    <app-sidebar
+      [isOverlay]="true"
+      (onClose)="isSidebarOpen.set(false)"
+      [isDarkMode]="isDarkMode()"
+      (toggleTheme)="toggleTheme()"
+    />
+  </nav>
+
+  <section class="layout__content-wrapper">
+    <header class="layout__header">
+      <app-header
+        (openSidebar)="isSidebarOpen.set(true)"
+        [isDarkMode]="isDarkMode()"
+        (toggleTheme)="toggleTheme()"
+      />
+    </header>
+
+    <section class="layout__content">
+      <router-outlet />
+    </section>
+  </section>
+</main>

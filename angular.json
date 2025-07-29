@@ -57,9 +57,13 @@
               {
                 "glob": "**/*",
                 "input": "projects/demo/public"
-              }
+              },
+              "projects/demo/src/assets"
             ],
             "styles": ["projects/demo/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/demo/src/styles"]
+            },
             "scripts": [],
             "allowedCommonJsDependencies": ["panzoom"]
           },
