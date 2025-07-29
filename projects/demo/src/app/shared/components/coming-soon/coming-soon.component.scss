@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.coming-soon {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+
+  &__title {
+    font-size: 2rem;
+  }
+}

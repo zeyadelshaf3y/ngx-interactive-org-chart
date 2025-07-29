@@ -1,0 +1,18 @@
+<div class="container">
+  <label for="switch" class="toggle">
+    <input
+      type="checkbox"
+      class="input"
+      id="switch"
+      [checked]="isDarkMode()"
+      (change)="isDarkMode.set(!isDarkMode())"
+    />
+    <div class="icon icon--moon">
+      <app-icon name="moon-stars" [size]="size()" />
+    </div>
+
+    <div class="icon icon--sun">
+      <app-icon name="sun" [size]="size()" />
+    </div>
+  </label>
+</div>

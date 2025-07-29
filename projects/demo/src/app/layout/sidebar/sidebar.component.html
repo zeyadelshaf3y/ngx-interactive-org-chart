@@ -1,0 +1,69 @@
+<aside class="sidebar" [class.overlay]="isOverlay()">
+  <!-- Logo & collapse section -->
+  <section class="sidebar__upper">
+    <section class="sidebar__logo-wrapper">
+      <span class="sidebar__logo-icon">
+        <app-icon name="logo" />
+      </span>
+
+      <section class="sidebar__logo-text-wrapper">
+        <span class="sidebar__logo-text">Ngx Interactive Org Chart</span>
+        <small class="sidebar__logo-text-author">by Zeyad Alshafey</small>
+      </section>
+    </section>
+
+    @if (isOverlay()) {
+      <app-button variant="icon" severity="tertiary" (onClick)="onClose.emit()">
+        <app-icon name="close-circle" />
+      </app-button>
+    }
+  </section>
+
+  <ul class="sidebar__links">
+    @for (item of upperItems; track item.title) {
+      <li class="sidebar__link-wrapper">
+        <a
+          class="sidebar__link"
+          [routerLink]="item.route"
+          routerLinkActive="sidebar__link-active"
+          (click)="onClose.emit()"
+          [title]="item.title"
+        >
+          <app-icon [name]="item.icon" size="small" />
+          <span class="sidebar__link-text">{{ item.title }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <section class="sidebar__lower">
+    <ul class="sidebar__links">
+      @for (item of lowerItems; track item.title) {
+        <li class="sidebar__link-wrapper">
+          <a
+            class="sidebar__link"
+            [href]="item.externalLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            [title]="item.title"
+          >
+            <app-icon [name]="item.icon" size="small" />
+            <span class="sidebar__link-text">{{ item.title }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <section class="sidebar__theme-switch">
+      <app-theme-switch [isDarkMode]="isDarkMode()" (isDarkModeChange)="onToggleTheme()" />
+    </section>
+
+    <section class="sidebar__mini-theme-switch">
+      <app-mini-theme-switch
+        [isDarkMode]="isDarkMode()"
+        (isDarkModeChange)="onToggleTheme()"
+        size="small"
+      />
+    </section>
+  </section>
+</aside>

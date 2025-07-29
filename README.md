@@ -29,6 +29,7 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 ├── dist/                             # 📦 Build outputs
 └── docs/                             # 📖 GitHub Pages demo
 ```
+
 - 📦 **Lightweight**: Minimal dependencies
 
 ## 🚀 Quick Start
@@ -51,7 +52,7 @@ import { NgxInteractiveOrgChart } from 'ngx-interactive-org-chart';
   imports: [NgxInteractiveOrgChart],
   template: `
     <ngx-interactive-org-chart [data]="orgData" [config]="config" />
-  `
+  `,
 })
 export class DemoComponent {
   orgData: OrgChartNode = {
@@ -67,15 +68,15 @@ export class DemoComponent {
         children: [
           {
             id: 'dev1',
-            name: 'Mike Johnson'
-          }
-        ]
+            name: 'Mike Johnson',
+          },
+        ],
       },
       {
         id: 'cfo',
-        name: 'Sarah Wilson'
-      }
-    ]
+        name: 'Sarah Wilson',
+      },
+    ],
   };
 }
 ```

@@ -1,0 +1,9 @@
+<button [ngClass]="getClasses()" (click)="onClick.emit($event)">
+  @if (loading()) {
+    <span class="button__loading">
+      <app-icon name="loading" />
+    </span>
+  }
+
+  <ng-content></ng-content>
+</button>

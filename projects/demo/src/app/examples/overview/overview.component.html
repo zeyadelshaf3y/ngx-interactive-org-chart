@@ -1,0 +1,78 @@
+<article class="overview">
+  <h1 class="overview__title">Overview</h1>
+  <p class="overview__description">
+    This section provides a brief overview of the application, highlighting its main features and
+    functionalities.
+  </p>
+
+  <section class="overview__demo">
+    <section class="overview__toolbar">
+      @for (button of toolbarButtons(); track $index) {
+        @if (button?.isText) {
+          <small class="overview__toolbar-text">{{ button?.label }}</small>
+        } @else {
+          <app-button
+            severity="inverted"
+            (click)="button?.onClick()"
+            variant="icon"
+            [title]="button?.title"
+          >
+            <div class="overview__toolbar-button">
+              <app-icon [name]="button?.icon" size="small" />
+              @if (button?.label) {
+                <span class="overview__toolbar-button-label">{{ button?.label }}</span>
+              }
+            </div>
+          </app-button>
+        }
+      }
+    </section>
+
+    <ngx-interactive-org-chart [data]="data() ?? {}" [themeOptions]="themeOptions">
+      <ng-template #nodeTemplate let-node="node">
+        @let nodeData = node?.data;
+
+        @switch (true) {
+          @case (
+            nodeData.type === overviewDataTypeEnum.Employee ||
+            nodeData.type === overviewDataTypeEnum.Contractor
+          ) {
+            @let isContractor = nodeData.type === overviewDataTypeEnum.Contractor;
+
+            <section class="overview__employee">
+              <section class="overview__employee-thumbnail">
+                <img [src]="nodeData?.thumbnail" />
+              </section>
+              <section class="overview__employee-details">
+                <span class="overview__employee-details-name">{{ nodeData?.name }}</span>
+                <span class="overview__employee-details-position">{{ nodeData?.title }}</span>
+                @if (isContractor) {
+                  <small class="overview__employee-details-type">Contractor</small>
+                }
+              </section>
+            </section>
+          }
+
+          @case (nodeData.type === overviewDataTypeEnum.Department) {
+            <section class="overview__department">
+              <section class="overview__department-thumbnail">
+                <app-icon
+                  name="department"
+                  class="overview__department-thumbnail-icon"
+                  size="large"
+                />
+              </section>
+
+              <section class="overview__department-details">
+                <span class="overview__department-details-name">{{ nodeData?.name }}</span>
+                <span class="overview__department-details-description">
+                  {{ node?.descendantsCount }} Members
+                </span>
+              </section>
+            </section>
+          }
+        }
+      </ng-template>
+    </ngx-interactive-org-chart>
+  </section>
+</article>

@@ -1,0 +1,25 @@
+<header class="header">
+  <section class="header__logo">
+    <app-button severity="tertiary" variant="icon" (onClick)="openSidebar.emit()">
+      <app-icon name="vertical-split" size="small" />
+    </app-button>
+
+    <span class="header__logo-text">Ngx Interactive Org Chart</span>
+  </section>
+
+  <section class="header__links">
+    <app-mini-theme-switch
+      [isDarkMode]="isDarkMode()"
+      (isDarkModeChange)="toggleTheme.emit()"
+      size="small"
+    />
+
+    <app-button severity="tertiary" variant="icon" (onClick)="openGithub()">
+      <app-icon name="package" size="small" />
+    </app-button>
+
+    <app-button severity="tertiary" variant="icon" (onClick)="openPackage()">
+      <app-icon name="github" size="small" />
+    </app-button>
+  </section>
+</header>

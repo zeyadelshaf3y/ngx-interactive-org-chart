@@ -1,0 +1,22 @@
+:host {
+  display: inline-block;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.icon {
+  color: var(--text-primary);
+
+  &--loading {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

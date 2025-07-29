@@ -1,0 +1,18 @@
+@mixin button-style($bg, $color, $focus-ring-color: var(--btn-primary-bg)) {
+  background-color: $bg;
+  color: $color;
+
+  &:focus-visible {
+    outline: 2px solid $focus-ring-color;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:active {
+      background-color: $bg;
+    }
+  }
+}

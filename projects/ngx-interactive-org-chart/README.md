@@ -11,7 +11,7 @@ A beautiful, interactive organizational chart component for Angular applications
 ## ✨ Features
 
 - 🎯 **Interactive Pan & Zoom** - Smooth navigation with mouse/touch
-- 🌳 **Hierarchical Layout** - Perfect for organizational structures  
+- 🌳 **Hierarchical Layout** - Perfect for organizational structures
 - 🎨 **Customizable Styling** - Fully themeable with CSS/SCSS
 - 📱 **Mobile Friendly** - Touch gestures support
 - ⚡ **High Performance** - Optimized rendering
@@ -38,7 +38,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideAnimations(), // Required for ngx-interactive-org-chart
     // ... your other providers
-  ]
+  ],
 });
 ```
 
@@ -55,7 +55,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   ],
   // ...
 })
-export class AppModule { }
+export class AppModule {}
 ```
 
 ## 📖 Usage
@@ -72,7 +72,7 @@ import { NgxInteractiveOrgChart } from 'ngx-interactive-org-chart';
   imports: [NgxInteractiveOrgChart],
   template: `
     <ngx-interactive-org-chart [data]="orgData" [config]="config" />
-  `
+  `,
 })
 export class DemoComponent {
   orgData: OrgChartNode = {
@@ -88,15 +88,15 @@ export class DemoComponent {
         children: [
           {
             id: 'dev1',
-            name: 'Mike Johnson'
-          }
-        ]
+            name: 'Mike Johnson',
+          },
+        ],
       },
       {
         id: 'cfo',
-        name: 'Sarah Wilson'
-      }
-    ]
+        name: 'Sarah Wilson',
+      },
+    ],
   };
 }
 ```
@@ -107,13 +107,13 @@ The component expects hierarchical data in the following format:
 
 ```typescript
 interface OrgNode<T> {
-   id?: string;
-   name?: string;
-   data?: T;
-   children?: OrgChartNode[];
-   collapsed?: boolean;
-   hidden?: boolean;
-   nodeClass?: string;
+  id?: string;
+  name?: string;
+  data?: T;
+  children?: OrgChartNode[];
+  collapsed?: boolean;
+  hidden?: boolean;
+  nodeClass?: string;
 }
 ```
 
@@ -121,32 +121,32 @@ interface OrgNode<T> {
 
 ```typescript
 interface OrgChartConfig {
-   connectorsAnimationDelay?: string;
-   animationDuration?: string;
-   collapseDuration?: string;
-   nodePadding?: string;
-   nodeContainerSpacing?: string;
-   nodeBorderRadius?: string;
-   nodeActiveBorderColor?: string;
-   connectorColor?: string;
-   connectorBorderRadius?: string;
-   connectorActiveColor?: string;
-   connectorWidth?: string;
-   collapseButtonSize?: string;
-   collapseButtonBorderRadius?: string;
-   nodeMaxWidth?: string;
-   nodeMinWidth?: string;
-   nodeMaxHeight?: string;
-   nodeMinHeight?: string;
+  connectorsAnimationDelay?: string;
+  animationDuration?: string;
+  collapseDuration?: string;
+  nodePadding?: string;
+  nodeContainerSpacing?: string;
+  nodeBorderRadius?: string;
+  nodeActiveBorderColor?: string;
+  connectorColor?: string;
+  connectorBorderRadius?: string;
+  connectorActiveColor?: string;
+  connectorWidth?: string;
+  collapseButtonSize?: string;
+  collapseButtonBorderRadius?: string;
+  nodeMaxWidth?: string;
+  nodeMinWidth?: string;
+  nodeMaxHeight?: string;
+  nodeMinHeight?: string;
 }
 ```
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `data` | `OrgChartNode` | required | The organizational data to display |
-| `collapsible` | `boolean` | `true` | Enable/disable node collapsing |
-| `config` | `OrgChartConfig` | `{}` | Configuration options for styling |
-| `nodeClass` | `string` | `undefined` | Custom CSS class applied to all nodes |
+| Property      | Type             | Default     | Description                           |
+| ------------- | ---------------- | ----------- | ------------------------------------- |
+| `data`        | `OrgChartNode`   | required    | The organizational data to display    |
+| `collapsible` | `boolean`        | `true`      | Enable/disable node collapsing        |
+| `config`      | `OrgChartConfig` | `{}`        | Configuration options for styling     |
+| `nodeClass`   | `string`         | `undefined` | Custom CSS class applied to all nodes |
 
 ## 🎨 Styling
 

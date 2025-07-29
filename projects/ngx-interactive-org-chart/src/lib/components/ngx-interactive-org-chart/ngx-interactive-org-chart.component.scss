@@ -1,11 +1,7 @@
 :host {
-  --content-background: #ffffff;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e4e7eb;
-  --gray-300: #d1d5da;
-  --gray-400: #9ba3af;
-  --active-color: #0065ff;
+  --collapse-duration: 0.3s;
+  --base-delay: 100ms;
+  --animation-duration: 0.5s;
 
   cursor: grab;
 
@@ -24,7 +20,8 @@
   scroll-behavior: smooth;
   scroll-margin-top: 1.25rem;
   scroll-margin-bottom: 1.25rem;
-  border: 0.0625rem dashed var(--gray-200);
+  border: var(--container-border);
+  background: var(--container-background);
   cursor: grab;
 
   &:active {
@@ -49,9 +46,11 @@
     padding-inline-start: 0;
     position: relative;
     opacity: 1;
-    transition: max-height var(--collapse-duration) ease,
+    transition:
+      max-height var(--collapse-duration) ease,
       opacity var(--collapse-duration) ease,
-      padding var(--collapse-duration) ease, width var(--collapse-duration) ease;
+      padding var(--collapse-duration) ease,
+      width var(--collapse-duration) ease;
 
     box-sizing: border-box;
     margin: 0 auto;
@@ -70,14 +69,15 @@
 
     .node-container {
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         inset-block-start: 0;
         inset-inline-start: 50%;
         border-inline-start: var(--connector-width) solid var(--connector-color);
         width: 0;
         height: calc(
-          var(--node-container-spacing) + (var(--collapse-button-size) / 2)
+          var(--node-container-spacing) +
+            (var(--collapse-button-size) / 2 + var(--connector-width))
         );
         opacity: 0;
         animation: lineAppearY var(--animation-duration) ease-out forwards;
@@ -108,7 +108,7 @@
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       inset-block-start: 0;
       inset-inline-end: 50%;
@@ -163,15 +163,16 @@
       max-height: var(--node-max-height);
       min-width: var(--node-min-width);
       min-height: var(--node-min-height);
-      background-color: var(--content-background);
-      box-shadow: 0 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.03);
+      background: var(--node-background);
+      color: var(--node-color);
+      box-shadow: var(--node-shadow);
       padding: var(--node-padding);
       position: relative;
       display: inline-grid;
       border-radius: var(--node-border-radius);
       text-decoration: none;
       transition: 0.5s;
-      outline: var(--connector-width) solid var(--connector-color);
+      outline: var(--node-outline-width) solid var(--node-outline-color);
       z-index: 1;
       box-sizing: content-box;
 
@@ -180,12 +181,13 @@
       }
 
       &:hover {
-        outline: var(--connector-width) solid var(--node-active-border-color);
+        outline: var(--node-outline-width) solid
+          var(--node-active-outline-color);
 
         + .node-container {
           .node-content {
-            outline: var(--connector-width) solid
-              var(--node-active-border-color);
+            outline: var(--node-outline-width) solid
+              var(--node-active-outline-color);
           }
 
           &::before {
@@ -211,26 +213,28 @@
 
   .collapse-btn {
     all: unset;
+    direction: ltr;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--gray-400);
-    background-color: var(--content-background);
-    border: 0.0625rem solid var(--connector-color);
+    color: var(--collapse-button-color);
+    background: var(--collapse-button-background);
+    border: 0.0625rem solid var(--collapse-button-border-color);
     border-radius: var(--collapse-button-border-radius);
     position: absolute;
-    bottom: calc(-1 * var(--collapse-button-size) / 2);
-    left: 50%;
+    inset-block-end: calc(-1 * var(--collapse-button-size) / 2);
+    inset-inline-start: 50%;
     transform: translateX(-50%);
     z-index: 2;
     cursor: pointer;
-    transition: transform var(--collapse-duration) ease,
+    transition:
+      transform var(--collapse-duration) ease,
       box-shadow var(--collapse-duration) ease;
 
     svg {
       transition: transform var(--collapse-duration) ease;
-      width: var(--collapse-button-size) !important;
-      height: var(--collapse-button-size) !important;
+      width: var(--collapse-button-size);
+      height: var(--collapse-button-size);
     }
 
     &.collapsed {
@@ -239,13 +243,21 @@
       }
     }
 
+    .children-count {
+      padding-inline-start: 0.25rem;
+      font-size: var(--collapse-button-count-font-size);
+    }
+
     &:hover {
-      transform: translateX(-50%) scale(1.1);
-      box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+      transform: translateX(-50%)
+        scale(var(--collapse-button-hover-transform-scale));
+      box-shadow: var(--collapse-button-hover-shadow);
+      color: var(--collapse-button-hover-color);
+      background: var(--collapse-button-hover-background);
     }
 
     &:focus-visible {
-      outline: 0.125rem solid var(--active-color);
+      outline: var(--collapse-button-focus-outline);
       outline-offset: 0.0625rem;
     }
   }
@@ -331,7 +343,7 @@
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(121, 59, 246, 0.7);
+    box-shadow: 0 0 0 0;
   }
   70% {
     box-shadow: 0 0 0 10px rgba(121, 59, 246, 0);
