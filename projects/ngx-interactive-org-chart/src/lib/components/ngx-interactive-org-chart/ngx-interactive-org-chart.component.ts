@@ -98,32 +98,83 @@ const RESET_DELAY = 300; // ms
   },
 })
 export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
-  readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   @ContentChild('nodeTemplate', { static: false })
   protected readonly customNodeTemplate?: TemplateRef<unknown>;
 
-  readonly panZoomContainer = viewChild<ElementRef>('panZoomContainer');
+  protected readonly panZoomContainer =
+    viewChild.required<ElementRef<HTMLElement>>('panZoomContainer');
 
+  /**
+   * The data for the org chart.
+   */
   readonly data = input.required<OrgChartNode<T>>();
+  /**
+   * The initial zoom level for the chart.
+   */
   readonly initialZoom = input<number>();
+  /**
+   * The minimum zoom level for the chart
+   */
   readonly minZoom = input<number>(0.1);
+  /**
+   * The maximum zoom level for the chart.
+   */
   readonly maxZoom = input<number>(5);
+  /**
+   * The speed at which the chart zooms in/out on wheel or pinch.
+   */
   readonly zoomSpeed = input<number>(1);
+  /**
+   * The speed at which the chart zooms in/out on double-click.
+   */
   readonly zoomDoubleClickSpeed = input<number>(2);
+  /**
+   * Whether the nodes can be collapsed/expanded.
+   */
   readonly collapsible = input<boolean>(true);
+  /**
+   * The CSS class to apply to each node element.
+   */
   readonly nodeClass = input<string>();
+  /**
+   * If set to `true`, all the nodes will be initially collapsed.
+   */
   readonly initialCollapsed = input<boolean>();
+  /**
+   * Whether to enable RTL (right-to-left) layout.
+   */
   readonly isRtl = input<boolean>();
+  /**
+   * Whether to display the count of children for each node on expand/collapse button.
+   */
   readonly displayChildrenCount = input<boolean>(true);
+  /**
+   * The ratio of the node's width to the viewport's width when highlighting.
+   */
+  readonly highlightZoomNodeWidthRatio = input<number>(0.3);
 
+  /**
+   * The ratio of the node's height to the viewport's height when highlighting.
+   */
+  readonly highlightZoomNodeHeightRatio = input<number>(0.4);
+  /**
+   * The minimum zoom level for the chart when highlighting a node.
+   */
+  readonly highlightZoomMinimum = input<number>(0.8);
+
+  /**
+   * The theme options for the org chart.
+   * This allows customization of the chart's appearance, including node styles, connector styles, and
+   * other visual elements.
+   */
   readonly themeOptions = input<NgxInteractiveOrgChartTheme>();
 
   private readonly defaultThemeOptions: NgxInteractiveOrgChartTheme =
     DEFAULT_THEME_OPTIONS;
 
-  // FIXME: back to protected
-  panZoomInstance: PanZoom | null = null;
+  protected panZoomInstance: PanZoom | null = null;
 
   protected readonly finalThemeOptions = computed<NgxInteractiveOrgChartTheme>(
     () => {
@@ -204,7 +255,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       this.panZoomInstance.dispose();
     }
 
-    const container = this.panZoomContainer()?.nativeElement as HTMLElement;
+    const container = this.panZoomContainer()?.nativeElement;
 
     this.panZoomInstance = createPanZoom(container, {
       autocenter: true,
@@ -261,7 +312,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.toggleCollapseAll(false);
 
     setTimeout(() => {
-      const nodeElement = this.elementRef?.nativeElement.querySelector(
+      const nodeElement = this.#elementRef?.nativeElement.querySelector(
         `#${this.getNodeId(nodeId)}`
       ) as HTMLElement;
 
@@ -277,14 +328,14 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    * and the hosting element's dimensions, then moves the panZoom instance to that position.
    */
   resetPan(): void {
-    const container = this.panZoomContainer()?.nativeElement as HTMLElement;
+    const container = this.panZoomContainer()?.nativeElement;
 
     if (!container || !this.panZoomInstance) {
       return;
     }
 
     const containerRect = container.getBoundingClientRect();
-    const hostingElement = this.elementRef.nativeElement;
+    const hostingElement = this.#elementRef.nativeElement;
     const windowWidth = hostingElement.getBoundingClientRect().width;
     const windowHeight = hostingElement.getBoundingClientRect().height;
 
@@ -304,7 +355,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const container = this.panZoomContainer()?.nativeElement as HTMLElement;
+    const container = this.panZoomContainer()?.nativeElement;
 
     if (!container) {
       return;
@@ -377,7 +428,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
     if (highlightNode) {
       setTimeout(() => {
-        const nodeElement = this.elementRef?.nativeElement.querySelector(
+        const nodeElement = this.#elementRef?.nativeElement.querySelector(
           `#${
             wasCollapsed
               ? this.getNodeChildrenId(nodeId)
@@ -405,7 +456,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   }): void {
     const containerEl = this.panZoomContainer()?.nativeElement;
     const containerRect = containerEl.getBoundingClientRect();
-    const hostElement = this.elementRef?.nativeElement;
+    const hostElement = this.#elementRef?.nativeElement;
     const hostElementRect = hostElement.getBoundingClientRect();
     const { scale } = this.panZoomInstance?.getTransform() ?? {
       scale: 1,
@@ -434,7 +485,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     skipZoom?: boolean;
     playAnimation?: boolean;
   }): void {
-    const container = this.panZoomContainer()?.nativeElement as HTMLElement;
+    const container = this.panZoomContainer()?.nativeElement;
 
     if (!container || !nodeElement || !this.panZoomInstance) {
       return;
@@ -450,21 +501,22 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       const hostElementRect =
-        this.elementRef.nativeElement.getBoundingClientRect();
+        this.#elementRef.nativeElement.getBoundingClientRect();
 
       const nodeRect1 = nodeElement.getBoundingClientRect();
       const clientX = nodeRect1.x - nodeRect1.width / 2 - hostElementRect.x;
       const clientY = nodeRect1.y - nodeRect1.height / 2 - hostElementRect.y;
 
       if (!skipZoom) {
-        this.panZoomInstance?.smoothZoomAbs(clientX, clientY, 1.5);
+        const dynamicZoom = this.calculateOptimalZoom(nodeElement);
+        this.panZoomInstance?.smoothZoomAbs(clientX, clientY, dynamicZoom);
       }
     }, 10);
 
     setTimeout(() => {
       const containerRect = container.getBoundingClientRect();
       const nodeRect = nodeElement.getBoundingClientRect();
-      const hostingElement = this.elementRef.nativeElement as HTMLElement;
+      const hostingElement = this.#elementRef.nativeElement;
       const windowWidth = hostingElement.getBoundingClientRect().width;
       const windowHeight = hostingElement.getBoundingClientRect().height;
 
@@ -514,8 +566,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   }
 
   private getFitScale(padding: number): number {
-    const hostingElement = this.elementRef?.nativeElement as HTMLElement;
-    const contentEl = this.panZoomContainer()?.nativeElement as HTMLElement;
+    const hostingElement = this.#elementRef?.nativeElement;
+    const contentEl = this.panZoomContainer()?.nativeElement;
 
     if (!hostingElement || !contentEl) return 1;
 
@@ -538,6 +590,56 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     const fitScale = Math.min(scaleX, scaleY, 1);
 
     return fitScale;
+  }
+
+  /**
+   * Calculates the optimal zoom level for highlighting a specific node.
+   * The zoom is calculated to ensure the node is appropriately sized relative to the container,
+   * while respecting the minimum and maximum zoom constraints.
+   * @param {HTMLElement} nodeElement - The node element to calculate zoom for.
+   * @returns {number} The optimal zoom level for the node.
+   */
+  private calculateOptimalZoom(nodeElement: HTMLElement): number {
+    const hostingElement = this.#elementRef?.nativeElement;
+
+    if (!hostingElement || !nodeElement) {
+      return 1.5; // fallback to original value
+    }
+
+    const containerRect = hostingElement.getBoundingClientRect();
+    const nodeRect = nodeElement.getBoundingClientRect();
+
+    // Calculate the current transform to get actual node dimensions
+    const currentTransform = this.panZoomInstance?.getTransform();
+    const currentScale = currentTransform?.scale || 1;
+
+    // Get the actual unscaled node dimensions
+    const actualNodeWidth = nodeRect.width / currentScale;
+    const actualNodeHeight = nodeRect.height / currentScale;
+
+    // Use configurable ratios for target node size
+    const targetNodeWidthRatio = this.highlightZoomNodeWidthRatio();
+    const targetNodeHeightRatio = this.highlightZoomNodeHeightRatio();
+
+    // Calculate zoom levels needed for width and height constraints
+    const zoomForWidth =
+      (containerRect.width * targetNodeWidthRatio) / actualNodeWidth;
+    const zoomForHeight =
+      (containerRect.height * targetNodeHeightRatio) / actualNodeHeight;
+
+    // Use the smaller zoom to ensure the node fits well in both dimensions
+    let optimalZoom = Math.min(zoomForWidth, zoomForHeight);
+
+    // Apply zoom constraints
+    const minZoom = this.minZoom();
+    const maxZoom = this.maxZoom();
+    optimalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+
+    // Ensure a configurable minimum reasonable zoom for visibility
+    const minimumZoom = this.highlightZoomMinimum();
+    optimalZoom = Math.max(minimumZoom, optimalZoom);
+
+    return optimalZoom;
   }
 
   ngOnDestroy(): void {
