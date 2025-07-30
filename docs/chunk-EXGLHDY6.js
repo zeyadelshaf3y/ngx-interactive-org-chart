@@ -1,0 +1,1 @@
+import{p as n}from"./chunk-AWEZEQ5G.js";import{$a as p,Ja as t}from"./chunk-KLOMR3AZ.js";var r=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-rtl-support"]],decls:1,vars:0,template:function(e,s){e&1&&p(0,"app-coming-soon")},dependencies:[n],encapsulation:2})};export{r as RtlSupportComponent};
