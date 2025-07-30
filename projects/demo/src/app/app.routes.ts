@@ -29,4 +29,8 @@ export const routes: Routes = [
     redirectTo: DemoRoutes.Overview,
     pathMatch: 'full',
   },
+  {
+    path: '**',
+    redirectTo: DemoRoutes.Overview,
+  },
 ];

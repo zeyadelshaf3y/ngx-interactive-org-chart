@@ -12,7 +12,7 @@
     "test": "ng test",
     "pack": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm pack",
     "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish",
-    "deploy": "npm run build:demo && cp -r docs/browser/* docs/ && rm -rf docs/browser",
+    "deploy": "npm run build:demo && cp -r docs/browser/* docs/ && cp docs/index.html docs/404.html && rm -rf docs/browser",
     "format": "prettier --write \"**/*.{ts,js,html,scss,css,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,js,html,scss,css,json,md}\"",
     "format:staged": "prettier --write",
