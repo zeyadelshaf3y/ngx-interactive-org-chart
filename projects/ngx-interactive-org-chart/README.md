@@ -2,7 +2,7 @@
 
 > Modern Angular organizational chart component with interactive pan/zoom functionality
 
-[![npm version](https://badge.fury.io/js/ngx-interactive-org-chart.svg)](https://badge.fury.io/js/ngx-interactive-org-chart)
+[![npm version](https://img.shields.io/npm/v/ngx-interactive-org-chart)](https://www.npmjs.com/package/ngx-interactive-org-chart)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/npm/dm/ngx-interactive-org-chart.svg)](https://www.npmjs.com/package/ngx-interactive-org-chart)
 
@@ -15,7 +15,16 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🎨 **Customizable Styling** - Fully themeable with CSS/SCSS
 - 📱 **Mobile Friendly** - Touch gestures support
 - ⚡ **High Performance** - Optimized rendering
+- 🔍 **Searchable Nodes** - Easily find nodes in large charts
+- 🧭 **Focus & Highlight** - Quickly navigate to specific nodes
+- 📊 **Custom Node Templates** - Use Angular templates for nodes
+- 📈 **Dynamic Data Binding** - Reactive updates with Angular signals
+- 📦 **Tree Shakable** - Import only what you need
+- 🔄 **Collapsible Nodes** - Expand/collapse functionality
+- 🌐 **RTL Support** - Right-to-left text direction
+- 🧩 **Modular Design** - Standalone component for easy integration
 - 🔧 **TypeScript Support** - Full type definitions included
+- 🛠️ **Easy Setup** - Minimal configuration required
 - 🎪 **Angular 19+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
@@ -64,14 +73,17 @@ export class AppModule {}
 
 ```typescript
 import { Component } from '@angular/core';
-import { NgxInteractiveOrgChart } from 'ngx-interactive-org-chart';
+import {
+  NgxInteractiveOrgChart,
+  OrgChartNode,
+} from 'ngx-interactive-org-chart';
 
 @Component({
   selector: 'app-demo',
   standalone: true,
   imports: [NgxInteractiveOrgChart],
   template: `
-    <ngx-interactive-org-chart [data]="orgData" [config]="config" />
+    <ngx-interactive-org-chart [data]="orgData" [themeOptions]="themeOptions" />
   `,
 })
 export class DemoComponent {
@@ -106,11 +118,11 @@ export class DemoComponent {
 The component expects hierarchical data in the following format:
 
 ```typescript
-interface OrgNode<T> {
+interface OrgChartNode<T = any> {
   id?: string;
   name?: string;
   data?: T;
-  children?: OrgChartNode[];
+  children?: OrgChartNode<T>[];
   collapsed?: boolean;
   hidden?: boolean;
   nodeClass?: string;
@@ -120,37 +132,350 @@ interface OrgNode<T> {
 ### Component Options
 
 ```typescript
-interface OrgChartConfig {
-  connectorsAnimationDelay?: string;
-  animationDuration?: string;
-  collapseDuration?: string;
-  nodePadding?: string;
-  nodeContainerSpacing?: string;
-  nodeBorderRadius?: string;
-  nodeActiveBorderColor?: string;
-  connectorColor?: string;
-  connectorBorderRadius?: string;
-  connectorActiveColor?: string;
-  connectorWidth?: string;
-  collapseButtonSize?: string;
-  collapseButtonBorderRadius?: string;
-  nodeMaxWidth?: string;
-  nodeMinWidth?: string;
-  nodeMaxHeight?: string;
-  nodeMinHeight?: string;
+interface NgxInteractiveOrgChartTheme {
+  node?: {
+    background?: string;
+    color?: string;
+    shadow?: string;
+    outlineColor?: string;
+    outlineWidth?: string;
+    activeOutlineColor?: string;
+    highlightShadowColor?: string;
+    padding?: string;
+    borderRadius?: string;
+    activeColor?: string;
+    containerSpacing?: string;
+    maxWidth?: string;
+    minWidth?: string;
+    maxHeight?: string;
+    minHeight?: string;
+  };
+  connector?: {
+    color?: string;
+    activeColor?: string;
+    borderRadius?: string;
+    width?: string;
+  };
+  collapseButton?: {
+    size?: string;
+    borderColor?: string;
+    borderRadius?: string;
+    color?: string;
+    background?: string;
+    hoverColor?: string;
+    hoverBackground?: string;
+    hoverShadow?: string;
+    hoverTransformScale?: string;
+    focusOutline?: string;
+    countFontSize?: string;
+  };
+  container?: {
+    background?: string;
+    border?: string;
+  };
 }
 ```
 
-| Property      | Type             | Default     | Description                           |
-| ------------- | ---------------- | ----------- | ------------------------------------- |
-| `data`        | `OrgChartNode`   | required    | The organizational data to display    |
-| `collapsible` | `boolean`        | `true`      | Enable/disable node collapsing        |
-| `config`      | `OrgChartConfig` | `{}`        | Configuration options for styling     |
-| `nodeClass`   | `string`         | `undefined` | Custom CSS class applied to all nodes |
+| Property               | Type                          | Default     | Description                             |
+| ---------------------- | ----------------------------- | ----------- | --------------------------------------- |
+| `data`                 | `OrgChartNode`                | required    | The organizational data to display      |
+| `collapsible`          | `boolean`                     | `true`      | Enable/disable node collapsing          |
+| `themeOptions`         | `NgxInteractiveOrgChartTheme` | `{}`        | Theme configuration options for styling |
+| `nodeClass`            | `string`                      | `undefined` | Custom CSS class applied to all nodes   |
+| `initialZoom`          | `number`                      | `undefined` | Initial zoom level                      |
+| `minZoom`              | `number`                      | `0.1`       | Minimum zoom level                      |
+| `maxZoom`              | `number`                      | `5`         | Maximum zoom level                      |
+| `zoomSpeed`            | `number`                      | `1`         | Zoom speed multiplier                   |
+| `zoomDoubleClickSpeed` | `number`                      | `2`         | Double-click zoom speed multiplier      |
+| `initialCollapsed`     | `boolean`                     | `false`     | Initial collapsed state for all nodes   |
+| `isRtl`                | `boolean`                     | `false`     | Right-to-left text direction support    |
+| `displayChildrenCount` | `boolean`                     | `true`      | Show children count on collapse buttons |
+
+### Component Methods
+
+The component exposes several useful methods that can be called using a template reference:
+
+```typescript
+@Component({
+  template: `
+    <ngx-interactive-org-chart #orgChart [data]="orgData" />
+    <button (click)="orgChart.zoomIn({ by: 10, relative: true })">Zoom In</button>
+    <button (click)="orgChart.zoomOut({ by: 10, relative: true })">Zoom Out</button>
+    <!-- Reset zoom and pan takes padding param for outer container -->
+    <button (click)="orgChart.resetPanAndZoom(50)">Reset</button>
+    <button (click)="orgChart.resetPan()">Reset Pan</button>
+    <button (click)="orgChart.resetZoom()">Reset Zoom</button>
+    <!-- Highlight a specific node by node.id  - if you want to get node id by searching for a node use orgChart.flattenedNodes() it returns a signal of all nodes flattened -->
+    <button (click)="orgChart.highlightNode('cto')">Highlight CTO</button>
+  `
+})
+```
+
+| Method                         | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `zoomIn(options?)`             | Zooms in the chart                       |
+| `zoomOut(options?)`            | Zooms out the chart                      |
+| `resetZoom(padding?)`          | Resets zoom to fit content               |
+| `resetPan()`                   | Resets pan position to center            |
+| `resetPanAndZoom(padding?)`    | Resets both pan and zoom                 |
+| `highlightNode(nodeId)`        | Highlights and focuses a specific node   |
+| `toggleCollapseAll(collapse?)` | Collapses or expands all nodes           |
+| `getScale()`                   | Returns current zoom scale as percentage |
+
+### Custom Node Templates
+
+You can customize how nodes are displayed by providing your own template. Use the `#nodeTemplate` template reference to override the default node appearance:
+
+```typescript
+enum TypeEnum {
+  Employee = 'employee',
+  Contractor = 'contractor',
+  Department = 'department',
+}
+
+interface ApiResponse {
+  readonly id: number;
+  readonly name: string;
+  readonly title?: string;
+  readonly thumbnail?: string;
+  readonly type: TypeEnum;
+  readonly children?: ApiResponse[];
+}
+
+@Component({
+  selector: 'app-custom-org-chart',
+  standalone: true,
+  imports: [NgxInteractiveOrgChart],
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgChartData() ?? {}"
+      [themeOptions]="themeOptions"
+      [displayChildrenCount]="false"
+    >
+      <ng-template #nodeTemplate let-node="node">
+        @let nodeData = node?.data;
+
+        @switch (true) {
+          @case (
+            nodeData.type === dataTypeEnum.Employee ||
+            nodeData.type === dataTypeEnum.Contractor
+          ) {
+            @let isContractor = nodeData.type === dataTypeEnum.Contractor;
+
+            <section class="demo__employee">
+              <section class="demo__employee-thumbnail">
+                <img [src]="nodeData?.thumbnail" />
+              </section>
+              <section class="demo__employee-details">
+                <span class="demo__employee-details-name">{{
+                  nodeData?.name
+                }}</span>
+                <span class="demo__employee-details-position">{{
+                  nodeData?.title
+                }}</span>
+                @if (isContractor) {
+                  <small class="demo__employee-details-type">Contractor</small>
+                }
+              </section>
+            </section>
+          }
+
+          @case (nodeData.type === dataTypeEnum.Department) {
+            <section class="demo__department">
+              <section class="demo__department-details">
+                <span class="demo__department-details-name">{{
+                  nodeData?.name
+                }}</span>
+                <span class="demo__department-details-description">
+                  {{ node?.descendantsCount }} Members
+                </span>
+              </section>
+            </section>
+          }
+        }
+      </ng-template>
+    </ngx-interactive-org-chart>
+  `,
+  styles: [
+    `
+      .demo {
+        &__employee {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+
+          &-thumbnail {
+            img {
+              border-radius: 50%;
+              width: 3rem;
+              height: 3rem;
+              object-fit: cover;
+              box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.3);
+            }
+          }
+
+          &-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: flex-start;
+
+            &-name {
+              color: var(--text-primary);
+              font-weight: 600;
+              font-size: 0.875rem;
+            }
+
+            &-position {
+              font-size: 0.75rem;
+              color: #6c757d;
+            }
+
+            &-type {
+              font-size: 0.5rem;
+              background-color: rgb(203, 225, 232);
+              padding: 0.125rem 0.25rem;
+              border-radius: 0.25rem;
+            }
+          }
+        }
+
+        &__department {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+
+          &-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: flex-start;
+
+            &-name {
+              font-weight: 600;
+              font-size: 0.875rem;
+            }
+
+            &-description {
+              font-size: 0.75rem;
+            }
+          }
+
+          &-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+          }
+        }
+      }
+    `,
+  ],
+})
+export class CustomOrgChartComponent {
+  data: ApiResponse = {
+    id: 1,
+    name: 'Company',
+    type: TypeEnum.Department,
+    children: [
+      {
+        id: 2,
+        name: 'Engineering',
+        type: TypeEnum.Department,
+        children: [
+          {
+            id: 3,
+            name: 'Alice Johnson',
+            title: 'Software Engineer',
+            thumbnail: 'https://randomuser.me/api/portraits/women/21.jpg',
+            type: TypeEnum.Employee,
+          },
+          {
+            id: 4,
+            name: 'Bob Smith',
+            title: 'Senior Developer',
+            thumbnail: 'https://randomuser.me/api/portraits/men/21.jpg',
+            type: TypeEnum.Contractor,
+          },
+        ],
+      },
+      {
+        id: 5,
+        name: 'Marketing',
+        type: TypeEnum.Department,
+        children: [
+          {
+            id: 6,
+            name: 'Carol White',
+            title: 'Marketing Manager',
+            thumbnail: 'https://randomuser.me/api/portraits/women/21.jpg',
+            type: TypeEnum.Employee,
+          },
+        ],
+      },
+    ],
+  };
+
+  protected readonly orgChartData = signal<OrgChartNode<ApiResponse> | null>(
+    null
+  );
+
+  readonly #setOrgChartData = effect(() => {
+    this.orgChartData.set(this.mapDataToOrgChartNode(this.data));
+  });
+
+  protected readonly dataTypeEnum = TypeEnum;
+
+  protected readonly themeOptions: NgxInteractiveOrgChartTheme = {
+    node: {
+      background: 'white',
+      color: 'black',
+      shadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      borderRadius: '8px',
+      outlineColor: '#e0e0e0',
+      activeOutlineColor: '#1976d2',
+    },
+  };
+
+  private mapDataToOrgChartNode({
+    children,
+    ...data
+  }: ApiResponse): OrgChartNode<ApiResponse> {
+    return {
+      id: data.id.toString(),
+      name: data.name, // for search purposes
+      collapsed: data.type === TypeEnum.Department, // collapse departments by default
+      style: {
+        // Apply any conditional styles here: For example, different background colors based on type
+        background: data.type === TypeEnum.Department ? '#e3f2fd' : '#f1f1f1',
+        color: data.type === TypeEnum.Department ? '#1976d2' : '#333',
+        // or you can just use predefined css variables (preferable)
+        '--node-background':
+          data.type === TypeEnum.Department ? '#e3f2fd' : '#f1f1f1',
+        '--node-color': data.type === TypeEnum.Department ? '#1976d2' : '#333',
+      },
+      // you can also set a custom class for each node, but make sure you apply this class in ng-deep
+      nodeClass:
+        data.type === TypeEnum.Department ? 'department-node' : 'employee-node',
+      data: {
+        ...data,
+      },
+      children: children?.map(child => this.mapDataToOrgChartNode(child)) || [],
+    };
+  }
+}
+```
+
+The custom template receives the node data through the `let-node="node"` directive. You can access:
+
+- `node.name` - The node name
+- `node.data` - Custom data object with any properties you define
+- `node.id` - Unique node identifier
+- `node.children` - Array of child nodes
+- `node.collapsed` - Current collapsed state
+- `node.descendantsCount` - Total number of descendants (useful for displaying counts)
 
 ## 🎨 Styling
 
-You can add a custom class to each node that will be applied separately or use the `nodeClass` input that will be applied to all nodes.
+You can add a custom class to each node that will be applied separately or use the `nodeClass` input that will be applied to all nodes or you can use the `themeOptions` input to define global styles for nodes, connectors, and the chart container.
 
 ## 📊 Live Demo
 

@@ -14,9 +14,9 @@ export const DEFAULT_THEME_OPTIONS: NgxInteractiveOrgChartTheme = {
     containerSpacing: '20px',
     activeColor: '#3b82f6',
     maxWidth: 'auto',
-    minWidth: '8rem',
+    minWidth: 'auto',
     maxHeight: 'auto',
-    minHeight: '3rem',
+    minHeight: 'auto',
   },
   connector: {
     color: '#d1d5db',
