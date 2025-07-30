@@ -176,20 +176,23 @@ interface NgxInteractiveOrgChartTheme {
 }
 ```
 
-| Property               | Type                          | Default     | Description                             |
-| ---------------------- | ----------------------------- | ----------- | --------------------------------------- |
-| `data`                 | `OrgChartNode`                | required    | The organizational data to display      |
-| `collapsible`          | `boolean`                     | `true`      | Enable/disable node collapsing          |
-| `themeOptions`         | `NgxInteractiveOrgChartTheme` | `{}`        | Theme configuration options for styling |
-| `nodeClass`            | `string`                      | `undefined` | Custom CSS class applied to all nodes   |
-| `initialZoom`          | `number`                      | `undefined` | Initial zoom level                      |
-| `minZoom`              | `number`                      | `0.1`       | Minimum zoom level                      |
-| `maxZoom`              | `number`                      | `5`         | Maximum zoom level                      |
-| `zoomSpeed`            | `number`                      | `1`         | Zoom speed multiplier                   |
-| `zoomDoubleClickSpeed` | `number`                      | `2`         | Double-click zoom speed multiplier      |
-| `initialCollapsed`     | `boolean`                     | `false`     | Initial collapsed state for all nodes   |
-| `isRtl`                | `boolean`                     | `false`     | Right-to-left text direction support    |
-| `displayChildrenCount` | `boolean`                     | `true`      | Show children count on collapse buttons |
+| Property                       | Type                          | Default     | Description                                                        |
+| ------------------------------ | ----------------------------- | ----------- | ------------------------------------------------------------------ |
+| `data`                         | `OrgChartNode`                | required    | The organizational data to display                                 |
+| `collapsible`                  | `boolean`                     | `true`      | Enable/disable node collapsing                                     |
+| `themeOptions`                 | `NgxInteractiveOrgChartTheme` | `{}`        | Theme configuration options for styling                            |
+| `nodeClass`                    | `string`                      | `undefined` | Custom CSS class applied to all nodes                              |
+| `initialZoom`                  | `number`                      | `undefined` | Initial zoom level                                                 |
+| `minZoom`                      | `number`                      | `0.1`       | Minimum zoom level                                                 |
+| `maxZoom`                      | `number`                      | `5`         | Maximum zoom level                                                 |
+| `zoomSpeed`                    | `number`                      | `1`         | Zoom speed multiplier                                              |
+| `zoomDoubleClickSpeed`         | `number`                      | `2`         | Double-click zoom speed multiplier                                 |
+| `initialCollapsed`             | `boolean`                     | `false`     | Initial collapsed state for all nodes                              |
+| `isRtl`                        | `boolean`                     | `false`     | Right-to-left text direction support                               |
+| `displayChildrenCount`         | `boolean`                     | `true`      | Show children count on collapse buttons                            |
+| `highlightZoomNodeWidthRatio`  | `number`                      | `0.3`       | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
+| `highlightZoomNodeHeightRatio` | `number`                      | `0.4`       | Node height ratio relative to viewport when highlighting (0.1-1.0) |
+| `highlightZoomMinimum`         | `number`                      | `0.8`       | Minimum zoom level when highlighting a node                        |
 
 ### Component Methods
 
@@ -221,6 +224,35 @@ The component exposes several useful methods that can be called using a template
 | `highlightNode(nodeId)`        | Highlights and focuses a specific node   |
 | `toggleCollapseAll(collapse?)` | Collapses or expands all nodes           |
 | `getScale()`                   | Returns current zoom scale as percentage |
+
+### Dynamic Zoom Configuration
+
+The component supports dynamic zoom calculation when highlighting nodes. This ensures optimal zoom levels based on the node size and viewport dimensions:
+
+```typescript
+@Component({
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgData"
+      [highlightZoomNodeWidthRatio]="0.4"
+      [highlightZoomNodeHeightRatio]="0.5"
+      [highlightZoomMinimum]="1.0"
+    />
+  `
+})
+```
+
+**Configuration Options:**
+
+- `highlightZoomNodeWidthRatio` (0.1-1.0): How much of the viewport width the highlighted node should occupy
+- `highlightZoomNodeHeightRatio` (0.1-1.0): How much of the viewport height the highlighted node should occupy
+- `highlightZoomMinimum`: Minimum zoom level when highlighting (prevents over-zooming out)
+
+**Examples:**
+
+- Small nodes: Use higher ratios (0.4-0.6) for better visibility
+- Large nodes: Use lower ratios (0.2-0.3) to avoid excessive zoom
+- Mobile devices: Consider using higher minimum zoom for readability
 
 ### Custom Node Templates
 
