@@ -280,7 +280,6 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
     this.panZoomInstance = createPanZoom(container, {
       autocenter: true,
-      bounds: true,
       initialZoom: this.getFitScale(),
       initialX: hostingElement.offsetWidth / 2,
       initialY: hostingElement.offsetHeight / 2,
@@ -448,6 +447,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     });
 
     this.nodes.set(nodes);
+
+    this.panZoomInstance?.resume();
 
     if (highlightNode) {
       setTimeout(() => {
