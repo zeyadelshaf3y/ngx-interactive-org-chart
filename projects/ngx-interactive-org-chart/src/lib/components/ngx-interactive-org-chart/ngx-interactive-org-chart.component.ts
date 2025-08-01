@@ -3,7 +3,9 @@ import {
   AfterViewInit,
   Component,
   computed,
+  contentChild,
   ContentChild,
+  contentChildren,
   effect,
   ElementRef,
   inject,
@@ -13,7 +15,11 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
-import { NgxInteractiveOrgChartTheme, OrgChartNode } from '../../models';
+import {
+  NgxInteractiveOrgChartLayout,
+  NgxInteractiveOrgChartTheme,
+  OrgChartNode,
+} from '../../models';
 import { mapNodesRecursively, toggleNodeCollapse } from '../../helpers';
 
 import createPanZoom, { PanZoom } from 'panzoom';
@@ -95,6 +101,7 @@ const RESET_DELAY = 300; // ms
     '[style.--container-background]':
       'finalThemeOptions().container.background',
     '[style.--container-border]': 'finalThemeOptions().container.border',
+    '[attr.data-layout]': 'layout()',
   },
 })
 export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
@@ -105,6 +112,9 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   protected readonly panZoomContainer =
     viewChild.required<ElementRef<HTMLElement>>('panZoomContainer');
+
+  private readonly container =
+    viewChild.required<ElementRef<HTMLElement>>('container');
 
   /**
    * The data for the org chart.
@@ -146,6 +156,16 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    * Whether to enable RTL (right-to-left) layout.
    */
   readonly isRtl = input<boolean>();
+  /**
+   * The layout direction of the org chart tree.
+   * - 'vertical': Traditional top-to-bottom tree layout
+   * - 'horizontal': Left-to-right tree layout
+   */
+  readonly layout = input<NgxInteractiveOrgChartLayout>('vertical');
+  /**
+   * Whether to focus on the node when it is collapsed and focus on its children when it is expanded.
+   */
+  readonly focusOnCollapseOrExpand = input<boolean>(false);
   /**
    * Whether to display the count of children for each node on expand/collapse button.
    */
@@ -256,11 +276,14 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     }
 
     const container = this.panZoomContainer()?.nativeElement;
+    const hostingElement = this.#elementRef.nativeElement;
 
     this.panZoomInstance = createPanZoom(container, {
       autocenter: true,
       bounds: true,
-      initialZoom: this.initialZoom(),
+      initialZoom: this.getFitScale(),
+      initialX: hostingElement.offsetWidth / 2,
+      initialY: hostingElement.offsetHeight / 2,
       enableTextSelection: false,
       minZoom: this.minZoom(),
       maxZoom: this.maxZoom(),
@@ -454,7 +477,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     by?: number;
     relative?: boolean;
   }): void {
-    const containerEl = this.panZoomContainer()?.nativeElement;
+    const containerEl = this.container()?.nativeElement;
     const containerRect = containerEl.getBoundingClientRect();
     const hostElement = this.#elementRef?.nativeElement;
     const hostElementRect = hostElement.getBoundingClientRect();
@@ -565,9 +588,9 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.scale.set(scalePercentage);
   }
 
-  private getFitScale(padding: number): number {
+  private getFitScale(padding: number = 20): number {
     const hostingElement = this.#elementRef?.nativeElement;
-    const contentEl = this.panZoomContainer()?.nativeElement;
+    const contentEl = this.container()?.nativeElement;
 
     if (!hostingElement || !contentEl) return 1;
 
