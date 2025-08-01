@@ -55,6 +55,8 @@ interface OrgChartConfigTheme {
 
 export type NgxInteractiveOrgChartTheme = DeepPartial<OrgChartConfigTheme>;
 
+export type NgxInteractiveOrgChartLayout = 'vertical' | 'horizontal';
+
 export interface OrgChartToggleNodeArgs<T> {
   readonly node: OrgChartNode<T>;
   readonly targetNode: string;

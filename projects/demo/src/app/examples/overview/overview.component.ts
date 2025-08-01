@@ -1,6 +1,7 @@
 import { Component, computed, effect, signal, viewChild } from '@angular/core';
 import {
   NgxInteractiveOrgChart,
+  NgxInteractiveOrgChartLayout,
   NgxInteractiveOrgChartTheme,
   OrgChartNode,
 } from 'ngx-interactive-org-chart';
@@ -60,52 +61,66 @@ export class OverviewComponent {
     },
   };
 
-  protected readonly toolbarButtons = computed<ToolbarButton[]>(() => [
-    {
-      title: 'Highlight Engineering Department',
-      label: 'Highlight Engineering Department',
-      icon: 'target',
-      onClick: () => this.orgChart()?.highlightNode(2),
-    },
+  protected readonly orgChartLayout =
+    signal<NgxInteractiveOrgChartLayout>('vertical');
 
-    {
-      title: 'Zoom Out',
-      icon: 'zoom-out',
-      onClick: () => this.orgChart()?.zoomOut(),
-    },
-    {
-      title: 'Zoom Level',
-      isText: true,
-      label: `${this.orgChart()?.getScale() ?? 0}%`,
-    },
-    {
-      title: 'Zoom In',
-      icon: 'zoom-in',
-      onClick: () => this.orgChart()?.zoomIn(),
-    },
+  protected readonly toolbarButtons = computed<ToolbarButton[]>(() => {
+    const isVerticalLayout = this.orgChartLayout() === 'vertical';
 
-    {
-      title: 'Collapse All Nodes',
-      icon: 'collapse',
-      onClick: () => {
-        this.orgChart()?.toggleCollapseAll(true);
-        setTimeout(() => this.reset(), 300);
+    return [
+      {
+        label: isVerticalLayout ? 'Switch to Horizontal' : 'Switch to Vertical',
+        icon: isVerticalLayout ? 'logo-horizontal' : 'logo',
+        onClick: () => {
+          this.orgChartLayout.set(isVerticalLayout ? 'horizontal' : 'vertical');
+        },
       },
-    },
-    {
-      title: 'Expand All Nodes',
-      icon: 'expand',
-      onClick: () => {
-        this.orgChart()?.toggleCollapseAll(false);
-        setTimeout(() => this.reset(), 300);
+      {
+        title: 'Highlight Engineering Department',
+        label: 'Highlight Engineering Department',
+        icon: 'target',
+        onClick: () => this.orgChart()?.highlightNode(2),
       },
-    },
-    {
-      title: 'Reset Zoom and Pan',
-      icon: 'refresh',
-      onClick: () => this.reset(),
-    },
-  ]);
+
+      {
+        title: 'Zoom Out',
+        icon: 'zoom-out',
+        onClick: () => this.orgChart()?.zoomOut(),
+      },
+      {
+        title: 'Zoom Level',
+        isText: true,
+        label: `${this.orgChart()?.getScale() ?? 0}%`,
+      },
+      {
+        title: 'Zoom In',
+        icon: 'zoom-in',
+        onClick: () => this.orgChart()?.zoomIn(),
+      },
+
+      {
+        title: 'Collapse All Nodes',
+        icon: 'collapse',
+        onClick: () => {
+          this.orgChart()?.toggleCollapseAll(true);
+          setTimeout(() => this.reset(), 300);
+        },
+      },
+      {
+        title: 'Expand All Nodes',
+        icon: 'expand',
+        onClick: () => {
+          this.orgChart()?.toggleCollapseAll(false);
+          setTimeout(() => this.reset(), 300);
+        },
+      },
+      {
+        title: 'Reset Zoom and Pan',
+        icon: 'refresh',
+        onClick: () => this.reset(),
+      },
+    ];
+  });
 
   private reset(): void {
     this.orgChart()?.resetPanAndZoom();

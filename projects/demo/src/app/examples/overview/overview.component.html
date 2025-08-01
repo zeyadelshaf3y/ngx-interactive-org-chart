@@ -28,7 +28,11 @@
       }
     </section>
 
-    <ngx-interactive-org-chart [data]="data() ?? {}" [themeOptions]="themeOptions">
+    <ngx-interactive-org-chart
+      [data]="data() ?? {}"
+      [themeOptions]="themeOptions"
+      [layout]="orgChartLayout()"
+    >
       <ng-template #nodeTemplate let-node="node">
         @let nodeData = node?.data;
 
