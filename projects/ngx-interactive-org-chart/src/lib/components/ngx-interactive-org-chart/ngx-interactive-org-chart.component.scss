@@ -232,9 +232,6 @@
     position: relative;
     padding: var(--node-container-spacing);
     transition: 0.5s;
-    opacity: 0;
-    transform: translateY(1.25rem) scale(0.95);
-    animation: nodeEnter var(--animation-duration) ease-out forwards;
     flex-shrink: 0;
     overflow: hidden;
 
@@ -398,23 +395,6 @@
       outline: var(--collapse-button-focus-outline);
       outline-offset: 0.0625rem;
     }
-  }
-}
-
-@keyframes nodeEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(0.85rem) scale(0.99);
-  }
-
-  60% {
-    opacity: 1;
-    transform: translateY(-0.25rem) scale(1.01);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
