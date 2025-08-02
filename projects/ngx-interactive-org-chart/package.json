@@ -1,6 +1,6 @@
 {
   "name": "ngx-interactive-org-chart",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Modern Angular organizational chart component with interactive pan/zoom functionality and more..",
   "keywords": [
     "angular",
