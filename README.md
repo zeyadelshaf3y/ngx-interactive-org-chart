@@ -134,38 +134,92 @@ The component features intelligent zoom calculation that automatically adjusts t
 // Configure dynamic zoom behavior
 <ngx-interactive-org-chart
   [data]="orgData"
-  [highlightZoomNodeWidthRatio]="0.4"     // Node takes 40% of viewport width
-  [highlightZoomNodeHeightRatio]="0.5"    // Node takes 50% of viewport height
+  [highlightZoomNodeWidthRatio]="0.4"     // Node takes 40% of container width
+  [highlightZoomNodeHeightRatio]="0.5"    // Node takes 50% of container height
   [highlightZoomMinimum]="1.0"            // Never zoom below 100%
 />
 
 // Programmatically highlight nodes
-@ViewChild('orgChart') orgChart!: NgxInteractiveOrgChart;
+@ViewChild(NgxInteractiveOrgChart) orgChart!: NgxInteractiveOrgChart;
 
 highlightManager() {
   this.orgChart.highlightNode('cto'); // Automatically zooms to optimal level
 }
 ```
 
+### 📐 Layout Options
+
+The component supports both vertical and horizontal layout orientations:
+
+```typescript
+// Vertical layout (default)
+<ngx-interactive-org-chart
+  [data]="orgData"
+  layout="vertical"
+/>
+
+// Horizontal layout
+<ngx-interactive-org-chart
+  [data]="orgData"
+  layout="horizontal"
+/>
+```
+
+### 🖱️ Pan Functionality
+
+The component includes built-in pan functionality that allows users to navigate large organizational charts:
+
+```typescript
+// Pan functionality is enabled by default
+// Users can click and drag to pan around the chart
+// Touch gestures are supported on mobile devices
+
+@ViewChild(NgxInteractiveOrgChart) orgChart!: NgxInteractiveOrgChart;
+
+// Programmatically control panning
+panToSpecificLocation() {
+  // Pan to specific coordinates (x, y, smooth)
+  this.orgChart.pan(100, 200, true); // Pans to x: 100, y: 200 with smooth animation
+}
+
+// Reset pan to center horizontally and vertically
+resetPanning() {
+  this.orgChart.resetPan(); // Centers the chart
+}
+
+// Reset both pan and zoom to fit the chart within the containing box
+resetView() {
+  this.orgChart.resetPanAndZoom(); // Centers and fits the chart
+}
+```
+
+**Pan Features:**
+
+- **Mouse Support:** Click and drag to pan around the chart
+- **Touch Support:** Touch and drag gestures on mobile devices
+- **Smooth Animation:** Animated transitions when panning programmatically
+- **Momentum:** Natural momentum-based panning for smooth user experience
+
 ## 📋 Component Properties
 
-| Property                       | Type                          | Default     | Description                                                        |
-| ------------------------------ | ----------------------------- | ----------- | ------------------------------------------------------------------ |
-| `data`                         | `OrgChartNode`                | required    | The organizational data to display                                 |
-| `collapsible`                  | `boolean`                     | `true`      | Enable/disable node collapsing                                     |
-| `themeOptions`                 | `NgxInteractiveOrgChartTheme` | `{}`        | Theme configuration options for styling                            |
-| `nodeClass`                    | `string`                      | `undefined` | Custom CSS class applied to all nodes                              |
-| `initialZoom`                  | `number`                      | `undefined` | Initial zoom level                                                 |
-| `minZoom`                      | `number`                      | `0.1`       | Minimum zoom level                                                 |
-| `maxZoom`                      | `number`                      | `5`         | Maximum zoom level                                                 |
-| `zoomSpeed`                    | `number`                      | `1`         | Zoom speed multiplier                                              |
-| `zoomDoubleClickSpeed`         | `number`                      | `2`         | Double-click zoom speed multiplier                                 |
-| `initialCollapsed`             | `boolean`                     | `false`     | Initial collapsed state for all nodes                              |
-| `isRtl`                        | `boolean`                     | `false`     | Right-to-left text direction support                               |
-| `displayChildrenCount`         | `boolean`                     | `true`      | Show children count on collapse buttons                            |
-| `highlightZoomNodeWidthRatio`  | `number`                      | `0.3`       | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
-| `highlightZoomNodeHeightRatio` | `number`                      | `0.4`       | Node height ratio relative to viewport when highlighting (0.1-1.0) |
-| `highlightZoomMinimum`         | `number`                      | `0.8`       | Minimum zoom level when highlighting a node                        |
+| Property                       | Type                          | Default      | Description                                                        |
+| ------------------------------ | ----------------------------- | ------------ | ------------------------------------------------------------------ |
+| `data`                         | `OrgChartNode`                | required     | The organizational data to display                                 |
+| `collapsible`                  | `boolean`                     | `true`       | Enable/disable node collapsing                                     |
+| `layout`                       | `'vertical' \| 'horizontal'`  | `'vertical'` | Chart layout orientation                                           |
+| `themeOptions`                 | `NgxInteractiveOrgChartTheme` | `{}`         | Theme configuration options for styling                            |
+| `nodeClass`                    | `string`                      | `undefined`  | Custom CSS class applied to all nodes                              |
+| `initialZoom`                  | `number`                      | `undefined`  | Initial zoom level                                                 |
+| `minZoom`                      | `number`                      | `0.1`        | Minimum zoom level                                                 |
+| `maxZoom`                      | `number`                      | `5`          | Maximum zoom level                                                 |
+| `zoomSpeed`                    | `number`                      | `1`          | Zoom speed multiplier                                              |
+| `zoomDoubleClickSpeed`         | `number`                      | `2`          | Double-click zoom speed multiplier                                 |
+| `initialCollapsed`             | `boolean`                     | `false`      | Initial collapsed state for all nodes                              |
+| `isRtl`                        | `boolean`                     | `false`      | Right-to-left text direction support                               |
+| `displayChildrenCount`         | `boolean`                     | `true`       | Show children count on collapse buttons                            |
+| `highlightZoomNodeWidthRatio`  | `number`                      | `0.3`        | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
+| `highlightZoomNodeHeightRatio` | `number`                      | `0.4`        | Node height ratio relative to viewport when highlighting (0.1-1.0) |
+| `highlightZoomMinimum`         | `number`                      | `0.8`        | Minimum zoom level when highlighting a node                        |
 
 ### Custom Node Templates
 

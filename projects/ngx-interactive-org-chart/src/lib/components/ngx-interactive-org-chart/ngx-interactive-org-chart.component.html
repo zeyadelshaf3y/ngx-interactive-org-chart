@@ -12,7 +12,7 @@
 </section>
 
 <ng-template #nodeTemplate let-node="node">
-  <li class="org-node" [class.collapsed]="node.collapsed" #container>
+  <li class="org-node" [class.collapsed]="node.collapsed" #orgChartContainer>
     <a
       [ngClass]="[node?.nodeClass ?? '', nodeClass() ?? '', 'node-content']"
       [ngStyle]="node.style"

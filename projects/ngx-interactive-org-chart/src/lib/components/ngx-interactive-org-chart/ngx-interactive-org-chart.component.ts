@@ -37,17 +37,22 @@ const RESET_DELAY = 300; // ms
   animations: [
     trigger('toggleNode', [
       transition(':enter', [
-        style({ width: '0', height: '0', opacity: 0 }),
+        style({ width: '0', height: '0', opacity: 0, transform: 'scale(0.8)' }),
         animate(
           '300ms ease-out',
-          style({ width: '*', height: '*', opacity: 1 })
+          style({ width: '*', height: '*', opacity: 1, transform: 'scale(1)' })
         ),
       ]),
       transition(':leave', [
         style({ width: '*', height: '*' }),
         animate(
           '300ms ease-out',
-          style({ width: '0', height: '0', opacity: 0 })
+          style({
+            width: '0',
+            height: '0',
+            opacity: 0,
+            transform: 'scale(0.8)',
+          })
         ),
       ]),
     ]),
@@ -113,8 +118,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   protected readonly panZoomContainer =
     viewChild.required<ElementRef<HTMLElement>>('panZoomContainer');
 
-  private readonly container =
-    viewChild.required<ElementRef<HTMLElement>>('container');
+  private readonly orgChartContainer =
+    viewChild.required<ElementRef<HTMLElement>>('orgChartContainer');
 
   /**
    * The data for the org chart.
@@ -279,7 +284,6 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     const hostingElement = this.#elementRef.nativeElement;
 
     this.panZoomInstance = createPanZoom(container, {
-      autocenter: true,
       initialZoom: this.getFitScale(),
       initialX: hostingElement.offsetWidth / 2,
       initialY: hostingElement.offsetHeight / 2,
@@ -342,6 +346,34 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
         nodeElement,
       });
     }, 200);
+  }
+
+  /**
+   * Pans the view of the org chart.
+   * @param x The horizontal offset to pan to.
+   * @param y The vertical offset to pan to.
+   * @param smooth Whether to animate the panning.
+   * @returns void
+   */
+  pan(x: number, y: number, smooth: boolean): void {
+    const container = this.orgChartContainer()?.nativeElement;
+
+    if (!container || !this.panZoomInstance) {
+      return;
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const panZoomRect =
+      this.panZoomContainer()?.nativeElement.getBoundingClientRect();
+
+    const transformedX = x - containerRect.x + panZoomRect.x;
+    const transformedY = y - containerRect.y + panZoomRect.y;
+
+    if (smooth) {
+      this.panZoomInstance.smoothMoveTo(transformedX, transformedY);
+    } else {
+      this.panZoomInstance.moveTo(transformedX, transformedY);
+    }
   }
 
   /**
@@ -478,7 +510,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     by?: number;
     relative?: boolean;
   }): void {
-    const containerEl = this.container()?.nativeElement;
+    const containerEl = this.panZoomContainer()?.nativeElement;
     const containerRect = containerEl.getBoundingClientRect();
     const hostElement = this.#elementRef?.nativeElement;
     const hostElementRect = hostElement.getBoundingClientRect();
@@ -591,7 +623,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   private getFitScale(padding: number = 20): number {
     const hostingElement = this.#elementRef?.nativeElement;
-    const contentEl = this.container()?.nativeElement;
+    const contentEl = this.orgChartContainer()?.nativeElement;
 
     if (!hostingElement || !contentEl) return 1;
 
