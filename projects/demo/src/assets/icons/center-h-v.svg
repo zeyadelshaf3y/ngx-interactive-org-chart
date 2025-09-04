@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- frame corners -->
+    <path d="M4 9V6a2 2 0 0 1 2-2h3" />
+    <path d="M15 4h3a2 2 0 0 1 2 2v3" />
+    <path d="M20 15v3a2 2 0 0 1-2 2h-3" />
+    <path d="M9 20H6a2 2 0 0 1-2-2v-3" />
+
+    <!-- outward arrows -->
+    <path d="M10 10L6.5 6.5" /> <!-- top-left -->
+    <path d="M14 10L17.5 6.5" /> <!-- top-right -->
+    <path d="M10 14L6.5 17.5" /> <!-- bottom-left -->
+    <path d="M14 14L17.5 17.5" /> <!-- bottom-right -->
+</svg>

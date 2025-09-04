@@ -393,10 +393,19 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     const windowWidth = hostingElement.getBoundingClientRect().width;
     const windowHeight = hostingElement.getBoundingClientRect().height;
 
-    this.panZoomInstance?.smoothMoveTo(
-      (-1 * containerRect.width) / 2 + windowWidth / 2,
-      (-1 * containerRect.height) / 2 + windowHeight / 2
-    );
+    let x = (-1 * containerRect.width) / 2 + windowWidth / 2;
+
+    if (this.layout() === 'horizontal') {
+      if (this.isRtl()) {
+        x = windowWidth - containerRect.width;
+      } else {
+        x = 0;
+      }
+    }
+
+    const y = (-1 * containerRect.height) / 2 + windowHeight / 2;
+
+    this.panZoomInstance?.smoothMoveTo(x, y);
   }
 
   /**
@@ -518,10 +527,17 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       scale: 1,
     };
 
-    const centerX =
-      containerRect.width / 2 + containerRect.x - hostElementRect.x;
+    let centerX = containerRect.width / 2 + containerRect.x - hostElementRect.x;
     const centerY =
       containerRect.height / 2 + containerRect.y - hostElementRect.y;
+
+    if (this.layout() === 'horizontal') {
+      if (this.isRtl()) {
+        centerX = containerRect.width + containerRect.x - hostElementRect.x;
+      } else {
+        centerX = 0;
+      }
+    }
 
     const newScale = relative
       ? type === 'in'

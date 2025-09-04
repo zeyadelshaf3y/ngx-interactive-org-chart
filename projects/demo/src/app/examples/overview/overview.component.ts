@@ -62,7 +62,7 @@ export class OverviewComponent {
   };
 
   protected readonly orgChartLayout =
-    signal<NgxInteractiveOrgChartLayout>('vertical');
+    signal<NgxInteractiveOrgChartLayout>('horizontal');
 
   protected readonly toolbarButtons = computed<ToolbarButton[]>(() => {
     const isVerticalLayout = this.orgChartLayout() === 'vertical';
@@ -116,7 +116,7 @@ export class OverviewComponent {
       },
       {
         title: 'Reset Zoom and Pan',
-        icon: 'refresh',
+        icon: 'center-h-v',
         onClick: () => this.reset(),
       },
     ];

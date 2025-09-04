@@ -8,13 +8,11 @@
   &:active {
     cursor: grabbing;
   }
-
-  direction: ltr; // override default direction
 }
 
 :host[data-layout="horizontal"] {
   .org-chart {
-    min-width: auto;
+    min-width: 100%;
 
     &:first-child {
       display: flex;
@@ -42,6 +40,7 @@
       flex-direction: column;
 
       .node-container {
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         margin: 0;
@@ -64,7 +63,7 @@
 
     .org-node {
       justify-content: flex-start;
-      overflow: hidden;
+      overflow: visible;
 
       &::before,
       &::after {
@@ -81,6 +80,10 @@
         inset-block-end: auto;
         inset-block-start: 50%;
         border-block-start: var(--connector-width) solid var(--connector-color);
+      }
+
+      &::before {
+        border-block-start: none;
       }
 
       &:only-child {
@@ -146,6 +149,15 @@
 
       .children-count {
         padding-inline-start: 0;
+      }
+    }
+  }
+
+  .rtl {
+    .org-chart {
+      .collapse-btn {
+        inset-inline-start: calc(-1 * var(--collapse-button-size) / 2);
+        inset-inline-end: unset;
       }
     }
   }
@@ -464,9 +476,9 @@
     box-shadow: 0 0 0 0;
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(121, 59, 246, 0);
+    box-shadow: 0 0 0 10px var(--node-highlight-shadow-color);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(121, 59, 246, 0);
+    box-shadow: 0 0 0 0 var(--node-highlight-shadow-color);
   }
 }

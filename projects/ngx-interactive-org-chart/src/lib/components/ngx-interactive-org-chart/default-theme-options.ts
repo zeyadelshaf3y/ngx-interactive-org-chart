@@ -8,7 +8,7 @@ export const DEFAULT_THEME_OPTIONS: NgxInteractiveOrgChartTheme = {
     outlineWidth: '2px',
     shadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
     outlineColor: '#d1d5db',
-    highlightShadowColor: '#3b82f6',
+    highlightShadowColor: 'rgba(121, 59, 246, 0)',
     padding: '12px 16px',
     borderRadius: '8px',
     containerSpacing: '20px',

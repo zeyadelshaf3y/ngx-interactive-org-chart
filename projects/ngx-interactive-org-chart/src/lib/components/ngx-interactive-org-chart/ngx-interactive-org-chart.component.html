@@ -1,4 +1,4 @@
-<section class="org-chart-container">
+<section class="org-chart-container" [class.rtl]="isRtl()">
   <section class="org-chart" #panZoomContainer>
     @if (nodes()?.id) {
       <ul class="node-container">
@@ -21,7 +21,6 @@
       [attr.aria-label]="
         node.name + (node.children?.length ? (node.collapsed ? ' (collapsed)' : ' (expanded)') : '')
       "
-      [dir]="isRtl() ? 'rtl' : 'ltr'"
     >
       @if (customNodeTemplate) {
         <ng-container

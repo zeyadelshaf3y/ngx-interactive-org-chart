@@ -9,6 +9,7 @@
     "build:demo": "ng build demo --configuration production --output-path docs --base-href /ngx-interactive-org-chart/",
     "build:icons": "npx svg-sprite -s -o projects/demo/src/assets/icons/ --symbol-dest projects/demo/src/assets/icons/ projects/demo/src/assets/icons/*.svg",
     "watch": "ng build --watch --configuration development",
+    "watch:lib": "ng build ngx-interactive-org-chart --watch --configuration development",
     "test": "ng test",
     "pack": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm pack",
     "publish": "npm run build:lib && cd dist/ngx-interactive-org-chart && npm publish",

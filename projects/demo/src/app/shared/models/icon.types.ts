@@ -20,4 +20,5 @@ export type IconType =
   | 'close-circle'
   | 'expand'
   | 'collapse'
-  | 'clock';
+  | 'clock'
+  | 'center-h-v';

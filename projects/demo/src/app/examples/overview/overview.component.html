@@ -32,6 +32,7 @@
       [data]="data() ?? {}"
       [themeOptions]="themeOptions"
       [layout]="orgChartLayout()"
+      [isRtl]="true"
     >
       <ng-template #nodeTemplate let-node="node">
         @let nodeData = node?.data;
