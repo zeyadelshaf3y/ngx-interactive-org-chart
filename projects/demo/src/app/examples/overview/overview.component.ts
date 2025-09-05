@@ -62,7 +62,7 @@ export class OverviewComponent {
   };
 
   protected readonly orgChartLayout =
-    signal<NgxInteractiveOrgChartLayout>('horizontal');
+    signal<NgxInteractiveOrgChartLayout>('vertical');
 
   protected readonly toolbarButtons = computed<ToolbarButton[]>(() => {
     const isVerticalLayout = this.orgChartLayout() === 'vertical';
