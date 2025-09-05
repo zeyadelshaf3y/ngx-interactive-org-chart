@@ -25,10 +25,17 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🧩 **Modular Design** - Standalone component for easy integration
 - 🔧 **TypeScript Support** - Full type definitions included
 - 🛠️ **Easy Setup** - Minimal configuration required
-- 🎪 **Angular 19+** - Built with latest Angular features
+- 🎪 **Angular 20+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
-## 🚀 Installation
+## � Version Compatibility
+
+| ngx-interactive-org-chart | Angular Version | Notes           |
+| ------------------------- | --------------- | --------------- |
+| 1.1.4                     | Angular 19      | Stable release  |
+| 1.1.5+                    | Angular 20+     | Latest features |
+
+## �🚀 Installation
 
 ```bash
 npm install ngx-interactive-org-chart
