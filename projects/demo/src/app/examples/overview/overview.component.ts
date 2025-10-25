@@ -3,7 +3,9 @@ import {
   NgxInteractiveOrgChart,
   NgxInteractiveOrgChartLayout,
   NgxInteractiveOrgChartTheme,
+  OrgChartDropNodeEventArgs,
   OrgChartNode,
+  moveNode,
 } from 'ngx-interactive-org-chart';
 import {
   OverviewData,
@@ -46,6 +48,7 @@ export class OverviewComponent {
       outlineColor: 'transparent',
       activeOutlineColor: 'transparent',
       shadow: '0 0 0.125rem rgba(0, 0, 0, 0.2)',
+      dragOverOutlineColor: 'var(--text-primary)',
     },
     collapseButton: {
       color: 'var(--text-secondary)',
@@ -63,6 +66,8 @@ export class OverviewComponent {
 
   protected readonly orgChartLayout =
     signal<NgxInteractiveOrgChartLayout>('vertical');
+
+  protected readonly draggableEnabled = signal<boolean>(false);
 
   protected readonly toolbarButtons = computed<ToolbarButton[]>(() => {
     const isVerticalLayout = this.orgChartLayout() === 'vertical';
@@ -119,8 +124,44 @@ export class OverviewComponent {
         icon: 'center-h-v',
         onClick: () => this.reset(),
       },
+      {
+        label: this.draggableEnabled()
+          ? 'Disable Drag & Drop'
+          : 'Enable Drag & Drop',
+        icon: 'drag-drop',
+        onClick: () => this.draggableEnabled.update(v => !v),
+      },
     ];
   });
+
+  /**
+   * Handles the node drop event from the org chart.
+   *
+   * IMPORTANT: The library does NOT modify your data automatically.
+   * You must handle the data restructuring yourself. This gives you:
+   * - Full control over validation
+   * - Ability to sync with backend
+   * - Custom business logic
+   * - Undo/redo capabilities
+   *
+   * Pattern:
+   * 1. Receive drag/drop event with source and target nodes
+   * 2. Use the provided `moveNode` helper or implement your own logic
+   * 3. Update the data signal/input
+   * 4. Library automatically re-renders
+   */
+  protected onNodeDrop(event: OrgChartDropNodeEventArgs<OverviewData>): void {
+    const currentData = this.data();
+    if (!currentData) return;
+
+    const updatedData = moveNode(
+      currentData,
+      event.draggedNode.id as string,
+      event.targetNode.id as string
+    );
+
+    this.data.set(updatedData);
+  }
 
   private reset(): void {
     this.orgChart()?.resetPanAndZoom();

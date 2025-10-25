@@ -21,4 +21,5 @@ export type IconType =
   | 'expand'
   | 'collapse'
   | 'clock'
-  | 'center-h-v';
+  | 'center-h-v'
+  | 'drag-drop';

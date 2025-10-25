@@ -327,6 +327,39 @@
         animation: pulse 1.5s infinite;
       }
 
+      &.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+      }
+
+      &.drag-over {
+        outline: 2px dashed var(--node-drag-over-outline-color);
+        background-color: color-mix(
+          in srgb,
+          var(--node-drag-over-outline-color) 10%,
+          var(--node-background)
+        );
+      }
+
+      &.drag-not-allowed {
+        cursor: not-allowed !important;
+      }
+
+      &[draggable="true"] {
+        cursor: move;
+      }
+
+      .drag-handle {
+        cursor: move;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &:active {
+          cursor: grabbing;
+        }
+      }
+
       &:hover {
         outline: var(--node-outline-width) solid
           var(--node-active-outline-color);

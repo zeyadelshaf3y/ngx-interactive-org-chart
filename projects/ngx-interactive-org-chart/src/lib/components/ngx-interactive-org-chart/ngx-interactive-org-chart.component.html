@@ -1,4 +1,4 @@
-<section class="org-chart-container" [class.rtl]="isRtl()">
+<section class="org-chart-container" [class.rtl]="isRtl()" (dragover)="onContainerDragOver($event)">
   <section class="org-chart" #panZoomContainer>
     @if (nodes()?.id) {
       <ul class="node-container">
@@ -21,6 +21,13 @@
       [attr.aria-label]="
         node.name + (node.children?.length ? (node.collapsed ? ' (collapsed)' : ' (expanded)') : '')
       "
+      [attr.draggable]="draggable() && !customDragHandleTemplate ? true : null"
+      (dragstart)="customDragHandleTemplate ? null : onDragStart($event, node)"
+      (dragend)="customDragHandleTemplate ? null : onDragEnd($event, node)"
+      (dragover)="onDragOver($event, node)"
+      (dragenter)="onDragEnter($event, node)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event, node)"
     >
       @if (customNodeTemplate) {
         <ng-container
@@ -32,6 +39,22 @@
         ></ng-container>
       } @else {
         <span>{{ node.name }}</span>
+      }
+      @if (customDragHandleTemplate && draggable()) {
+        <span
+          class="drag-handle"
+          [attr.draggable]="true"
+          (dragstart)="onDragStart($event, node)"
+          (dragend)="onDragEnd($event, node)"
+        >
+          <ng-container
+            [ngTemplateOutlet]="customDragHandleTemplate"
+            [ngTemplateOutletContext]="{
+              $implicit: node,
+              node: node,
+            }"
+          ></ng-container>
+        </span>
       }
       @if (collapsible() && node.children?.length) {
         <button
