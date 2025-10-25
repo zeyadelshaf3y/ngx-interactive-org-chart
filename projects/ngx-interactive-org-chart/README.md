@@ -158,6 +158,7 @@ interface NgxInteractiveOrgChartTheme {
     minWidth?: string;
     maxHeight?: string;
     minHeight?: string;
+    dragOverOutlineColor?: string;
   };
   connector?: {
     color?: string;
