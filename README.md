@@ -211,25 +211,29 @@ resetView() {
 
 ## 📋 Component Properties
 
-| Property                       | Type                          | Default      | Description                                                        |
-| ------------------------------ | ----------------------------- | ------------ | ------------------------------------------------------------------ |
-| `data`                         | `OrgChartNode`                | required     | The organizational data to display                                 |
-| `collapsible`                  | `boolean`                     | `true`       | Enable/disable node collapsing                                     |
-| `layout`                       | `'vertical' \| 'horizontal'`  | `'vertical'` | Chart layout orientation                                           |
-| `themeOptions`                 | `NgxInteractiveOrgChartTheme` | `{}`         | Theme configuration options for styling                            |
-| `nodeClass`                    | `string`                      | `undefined`  | Custom CSS class applied to all nodes                              |
-| `initialZoom`                  | `number`                      | `undefined`  | Initial zoom level                                                 |
-| `minZoom`                      | `number`                      | `0.1`        | Minimum zoom level                                                 |
-| `maxZoom`                      | `number`                      | `5`          | Maximum zoom level                                                 |
-| `zoomSpeed`                    | `number`                      | `1`          | Zoom speed multiplier                                              |
-| `zoomDoubleClickSpeed`         | `number`                      | `2`          | Double-click zoom speed multiplier                                 |
-| `initialCollapsed`             | `boolean`                     | `false`      | Initial collapsed state for all nodes                              |
-| `isRtl`                        | `boolean`                     | `false`      | Right-to-left text direction support                               |
-| `displayChildrenCount`         | `boolean`                     | `true`       | Show children count on collapse buttons                            |
-| `highlightZoomNodeWidthRatio`  | `number`                      | `0.3`        | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
-| `highlightZoomNodeHeightRatio` | `number`                      | `0.4`        | Node height ratio relative to viewport when highlighting (0.1-1.0) |
-| `highlightZoomMinimum`         | `number`                      | `0.8`        | Minimum zoom level when highlighting a node                        |
-| `draggable`                    | `boolean`                     | `false`      | Enable drag and drop functionality for nodes                       |
+| Property                       | Type                           | Default      | Description                                                        |
+| ------------------------------ | ------------------------------ | ------------ | ------------------------------------------------------------------ |
+| `data`                         | `OrgChartNode`                 | required     | The organizational data to display                                 |
+| `collapsible`                  | `boolean`                      | `true`       | Enable/disable node collapsing                                     |
+| `layout`                       | `'vertical' \| 'horizontal'`   | `'vertical'` | Chart layout orientation                                           |
+| `themeOptions`                 | `NgxInteractiveOrgChartTheme`  | `{}`         | Theme configuration options for styling                            |
+| `nodeClass`                    | `string`                       | `undefined`  | Custom CSS class applied to all nodes                              |
+| `initialZoom`                  | `number`                       | `undefined`  | Initial zoom level                                                 |
+| `minZoom`                      | `number`                       | `0.1`        | Minimum zoom level                                                 |
+| `maxZoom`                      | `number`                       | `5`          | Maximum zoom level                                                 |
+| `zoomSpeed`                    | `number`                       | `1`          | Zoom speed multiplier                                              |
+| `zoomDoubleClickSpeed`         | `number`                       | `2`          | Double-click zoom speed multiplier                                 |
+| `initialCollapsed`             | `boolean`                      | `false`      | Initial collapsed state for all nodes                              |
+| `isRtl`                        | `boolean`                      | `false`      | Right-to-left text direction support                               |
+| `displayChildrenCount`         | `boolean`                      | `true`       | Show children count on collapse buttons                            |
+| `highlightZoomNodeWidthRatio`  | `number`                       | `0.3`        | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
+| `highlightZoomNodeHeightRatio` | `number`                       | `0.4`        | Node height ratio relative to viewport when highlighting (0.1-1.0) |
+| `highlightZoomMinimum`         | `number`                       | `0.8`        | Minimum zoom level when highlighting a node                        |
+| `draggable`                    | `boolean`                      | `false`      | Enable drag and drop functionality for nodes                       |
+| `canDragNode`                  | `(node) => boolean`            | `undefined`  | Predicate function to determine if a node can be dragged           |
+| `canDropNode`                  | `(dragged, target) => boolean` | `undefined`  | Predicate function to validate drop operations                     |
+| `dragEdgeThreshold`            | `number`                       | `150`        | Distance in pixels from edge to trigger auto-panning during drag   |
+| `dragAutoPanSpeed`             | `number`                       | `15`         | Speed of auto-panning in pixels per frame during drag              |
 
 ## 🖱️ Drag & Drop
 
@@ -243,6 +247,8 @@ import { moveNode } from 'ngx-interactive-org-chart';
     <ngx-interactive-org-chart
       [data]="orgData()"
       [draggable]="true"
+      [canDragNode]="canDragNode"
+      [canDropNode]="canDropNode"
       (nodeDrop)="onNodeDrop($event)"
     >
       <!-- Optional: Custom drag handle -->
@@ -254,6 +260,14 @@ import { moveNode } from 'ngx-interactive-org-chart';
 })
 export class MyComponent {
   orgData = signal<OrgChartNode>(/* your data */);
+
+  // Optional: Control which nodes can be dragged
+  canDragNode = (node: OrgChartNode) => node.id !== 'root';
+
+  // Optional: Control where nodes can be dropped
+  canDropNode = (dragged: OrgChartNode, target: OrgChartNode) => {
+    return target.data?.type === 'Department';
+  };
 
   onNodeDrop(event: { draggedNode: OrgChartNode; targetNode: OrgChartNode }) {
     // Use built-in helper to move nodes
@@ -272,7 +286,10 @@ export class MyComponent {
 
 **Features:**
 
-- Auto-panning when dragging near edges
+- Auto-panning when dragging near edges (configurable speed and threshold)
+- Drag constraints with `canDragNode` and `canDropNode` predicates
+- ESC key to cancel drag operation
+- Visual feedback for valid/invalid drop targets
 - Custom drag handle templates
 - Helper functions for tree manipulation (`moveNode`, `findNode`, `removeNode`, etc.)
 - Full control over data updates
