@@ -40,7 +40,9 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 - 🔍 **Searchable Nodes** - Easily find nodes in large charts
 - 🧭 **Smart Highlight & Focus** - Dynamically zoom to nodes with optimal sizing
 - 📊 **Custom Node Templates** - Use Angular templates for nodes
-- 📈 **Dynamic Data Binding** - Reactive updates with Angular signals
+- �️ **Drag & Drop** - Reorganize nodes with drag and drop support
+- 🎯 **Custom Drag Handles** - Use custom templates for drag handles
+- �📈 **Dynamic Data Binding** - Reactive updates with Angular signals
 - 📦 **Tree Shakable** - Import only what you need
 - 🔄 **Collapsible Nodes** - Expand/collapse functionality
 - 🌐 **RTL Support** - Right-to-left text direction
@@ -227,6 +229,55 @@ resetView() {
 | `highlightZoomNodeWidthRatio`  | `number`                      | `0.3`        | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
 | `highlightZoomNodeHeightRatio` | `number`                      | `0.4`        | Node height ratio relative to viewport when highlighting (0.1-1.0) |
 | `highlightZoomMinimum`         | `number`                      | `0.8`        | Minimum zoom level when highlighting a node                        |
+| `draggable`                    | `boolean`                     | `false`      | Enable drag and drop functionality for nodes                       |
+
+## 🖱️ Drag & Drop
+
+Enable drag and drop to allow users to reorganize the chart:
+
+```typescript
+import { moveNode } from 'ngx-interactive-org-chart';
+
+@Component({
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgData()"
+      [draggable]="true"
+      (nodeDrop)="onNodeDrop($event)"
+    >
+      <!-- Optional: Custom drag handle -->
+      <ng-template #dragHandleTemplate let-node="node">
+        <button class="drag-handle">⋮⋮</button>
+      </ng-template>
+    </ngx-interactive-org-chart>
+  `,
+})
+export class MyComponent {
+  orgData = signal<OrgChartNode>(/* your data */);
+
+  onNodeDrop(event: { draggedNode: OrgChartNode; targetNode: OrgChartNode }) {
+    // Use built-in helper to move nodes
+    const updated = moveNode(
+      this.orgData(),
+      event.draggedNode.id,
+      event.targetNode.id
+    );
+
+    if (updated) {
+      this.orgData.set(updated);
+    }
+  }
+}
+```
+
+**Features:**
+
+- Auto-panning when dragging near edges
+- Custom drag handle templates
+- Helper functions for tree manipulation (`moveNode`, `findNode`, `removeNode`, etc.)
+- Full control over data updates
+
+For complete documentation, see the **[Library Documentation](./projects/ngx-interactive-org-chart/README.md)**.
 
 ### Custom Node Templates
 

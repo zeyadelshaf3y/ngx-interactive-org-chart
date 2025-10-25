@@ -15,7 +15,7 @@
             severity="inverted"
             (click)="button?.onClick()"
             variant="icon"
-            [title]="button?.title"
+            [title]="button?.title ?? ''"
           >
             <div class="overview__toolbar-button">
               <app-icon [name]="button?.icon" size="small" />
@@ -32,6 +32,8 @@
       [data]="data() ?? {}"
       [themeOptions]="themeOptions"
       [layout]="orgChartLayout()"
+      [draggable]="draggableEnabled()"
+      (nodeDrop)="onNodeDrop($event)"
     >
       <ng-template #nodeTemplate let-node="node">
         @let nodeData = node?.data;

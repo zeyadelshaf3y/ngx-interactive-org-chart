@@ -17,6 +17,7 @@ export const DEFAULT_THEME_OPTIONS: NgxInteractiveOrgChartTheme = {
     minWidth: 'auto',
     maxHeight: 'auto',
     minHeight: 'auto',
+    dragOverOutlineColor: '#3b82f6',
   },
   connector: {
     color: '#d1d5db',

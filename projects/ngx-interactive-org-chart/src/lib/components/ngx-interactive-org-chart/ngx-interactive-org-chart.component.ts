@@ -3,14 +3,13 @@ import {
   AfterViewInit,
   Component,
   computed,
-  contentChild,
   ContentChild,
-  contentChildren,
   effect,
   ElementRef,
   inject,
   input,
   OnDestroy,
+  output,
   signal,
   TemplateRef,
   viewChild,
@@ -18,6 +17,7 @@ import {
 import {
   NgxInteractiveOrgChartLayout,
   NgxInteractiveOrgChartTheme,
+  OrgChartDropNodeEventArgs,
   OrgChartNode,
 } from '../../models';
 import { mapNodesRecursively, toggleNodeCollapse } from '../../helpers';
@@ -74,6 +74,8 @@ const RESET_DELAY = 300; // ms
     '[style.--node-min-width]': 'finalThemeOptions().node.minWidth',
     '[style.--node-max-height]': 'finalThemeOptions().node.maxHeight',
     '[style.--node-min-height]': 'finalThemeOptions().node.minHeight',
+    '[style.--node-drag-over-outline-color]':
+      'finalThemeOptions().node.dragOverOutlineColor',
     '[style.--connector-color]': 'finalThemeOptions().connector.color',
     '[style.--connector-active-color]':
       'finalThemeOptions().connector.activeColor',
@@ -112,8 +114,52 @@ const RESET_DELAY = 300; // ms
 export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  /**
+   * Optional template for a custom node.
+   * When provided, this template will be used to render each node in the org chart.
+   *
+   * @remarks
+   * The template context includes:
+   * - `$implicit`: The node data
+   * - `node`: The node data (alternative accessor)
+   *
+   * @example
+   * ```html
+   * <ngx-interactive-org-chart>
+   *   <ng-template #nodeTemplate let-node="node">
+   *     <div class="custom-node">
+   *       <h3>{{ node.data?.name }}</h3>
+   *       <p>{{ node.data?.age }}</p>
+   *     </div>
+   *   </ng-template>
+   * </ngx-interactive-org-chart>
+   * ```
+   */
   @ContentChild('nodeTemplate', { static: false })
   protected readonly customNodeTemplate?: TemplateRef<unknown>;
+
+  /**
+   * Optional template for a custom drag handle.
+   * When provided, only this element will be draggable instead of the entire node.
+   *
+   * @remarks
+   * The template context includes:
+   * - `$implicit`: The node data
+   * - `node`: The node data (alternative accessor)
+   *
+   * @example
+   * ```html
+   * <ngx-interactive-org-chart [draggable]="true">
+   *   <ng-template #dragHandleTemplate let-node="node">
+   *     <button class="drag-handle" title="Drag to move">
+   *       <svg><!-- Drag icon --></svg>
+   *     </button>
+   *   </ng-template>
+   * </ngx-interactive-org-chart>
+   * ```
+   */
+  @ContentChild('dragHandleTemplate', { static: false })
+  protected readonly customDragHandleTemplate?: TemplateRef<unknown>;
 
   protected readonly panZoomContainer =
     viewChild.required<ElementRef<HTMLElement>>('panZoomContainer');
@@ -185,6 +231,72 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    */
   readonly highlightZoomNodeHeightRatio = input<number>(0.4);
   /**
+   * Whether to enable drag and drop functionality for nodes.
+   * When enabled, nodes can be dragged and dropped onto other nodes.
+   *
+   * @remarks
+   * By default, the entire node is draggable. To use a custom drag handle instead,
+   * provide a `dragHandleTemplate` template with the selector `#dragHandleTemplate`.
+   *
+   * @example
+   * ```html
+   * <ngx-interactive-org-chart [draggable]="true">
+   *   <!-- Custom drag handle template -->
+   *   <ng-template #dragHandleTemplate let-node="node">
+   *     <span class="drag-handle">⋮⋮</span>
+   *   </ng-template>
+   * </ngx-interactive-org-chart>
+   * ```
+   */
+  readonly draggable = input<boolean>(false);
+
+  /**
+   * Predicate function to determine if a specific node can be dragged.
+   *
+   * @param node - The node to check
+   * @returns true if the node can be dragged, false otherwise
+   *
+   * @example
+   * ```typescript
+   * // Prevent CEO node from being dragged
+   * canDragNode = (node: OrgChartNode) => node.data?.role !== 'CEO';
+   * ```
+   */
+  readonly canDragNode = input<(node: OrgChartNode<T>) => boolean>();
+
+  /**
+   * Predicate function to determine if a node can accept drops.
+   *
+   * @param draggedNode - The node being dragged
+   * @param targetNode - The potential drop target
+   * @returns true if the drop is allowed, false otherwise
+   *
+   * @example
+   * ```typescript
+   * // Don't allow employees to have subordinates
+   * canDropNode = (dragged: OrgChartNode, target: OrgChartNode) => {
+   *   return target.data?.type !== 'Employee';
+   * };
+   * ```
+   */
+  readonly canDropNode =
+    input<
+      (draggedNode: OrgChartNode<T>, targetNode: OrgChartNode<T>) => boolean
+    >();
+
+  /**
+   * The distance in pixels from the viewport edge to trigger auto-panning during drag.
+   * @default 150
+   */
+  readonly dragEdgeThreshold = input<number>(150);
+
+  /**
+   * The speed of auto-panning in pixels per frame during drag.
+   * @default 15
+   */
+  readonly dragAutoPanSpeed = input<number>(15);
+
+  /**
    * The minimum zoom level for the chart when highlighting a node.
    */
   readonly highlightZoomMinimum = input<number>(0.8);
@@ -196,10 +308,24 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
    */
   readonly themeOptions = input<NgxInteractiveOrgChartTheme>();
 
+  /**
+   * Event emitted when a node is dropped onto another node.
+   * Provides the dragged node and the target node.
+   */
+  readonly nodeDrop = output<OrgChartDropNodeEventArgs<T>>();
+
+  /**
+   * Event emitted when a node drag operation starts.
+   */
+  readonly nodeDragStart = output<OrgChartNode<T>>();
+
+  /**
+   * Event emitted when a node drag operation ends.
+   */
+  readonly nodeDragEnd = output<OrgChartNode<T>>();
+
   private readonly defaultThemeOptions: NgxInteractiveOrgChartTheme =
     DEFAULT_THEME_OPTIONS;
-
-  protected panZoomInstance: PanZoom | null = null;
 
   protected readonly finalThemeOptions = computed<NgxInteractiveOrgChartTheme>(
     () => {
@@ -229,6 +355,15 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   protected readonly nodes = signal<OrgChartNode<T> | null>(null);
 
   protected readonly scale = signal<number>(0);
+
+  protected readonly draggedNode = signal<OrgChartNode<T> | null>(null);
+
+  protected readonly dragOverNode = signal<OrgChartNode<T> | null>(null);
+
+  private autoPanInterval: number | null = null;
+  private keyboardListener: ((event: KeyboardEvent) => void) | null = null;
+
+  protected panZoomInstance: PanZoom | null = null;
 
   /**
    * A computed property that returns the current scale of the org chart.
@@ -619,6 +754,340 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     return `node-children-${nodeId}`;
   }
 
+  /**
+   * Handles the drag start event for a node.
+   * @param event - The drag event
+   * @param node - The node being dragged
+   */
+  protected onDragStart(event: DragEvent, node: OrgChartNode<T>): void {
+    if (!this.draggable()) return;
+
+    const canDrag = this.canDragNode();
+
+    if (canDrag && !canDrag(node)) {
+      event.preventDefault();
+
+      return;
+    }
+
+    this.draggedNode.set(node);
+    this.nodeDragStart.emit(node);
+
+    this.panZoomInstance?.pause();
+
+    const target = event.target as HTMLElement;
+    const nodeContent = target.closest('.node-content') as HTMLElement;
+
+    if (event.dataTransfer && nodeContent) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', node.id?.toString() || '');
+
+      const rect = nodeContent.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+
+      event.dataTransfer.setDragImage(nodeContent, offsetX, offsetY);
+    }
+
+    if (nodeContent) {
+      setTimeout(() => {
+        nodeContent.classList.add('dragging');
+      }, 0);
+    }
+
+    this.setupKeyboardListener();
+  }
+
+  /**
+   * Sets up keyboard event listener for drag cancellation.
+   */
+  private setupKeyboardListener(): void {
+    this.removeKeyboardListener();
+
+    this.keyboardListener = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && this.draggedNode()) {
+        this.cancelDrag();
+      }
+    };
+
+    document.addEventListener('keydown', this.keyboardListener);
+  }
+
+  /**
+   * Removes the keyboard event listener.
+   */
+  private removeKeyboardListener(): void {
+    if (this.keyboardListener) {
+      document.removeEventListener('keydown', this.keyboardListener);
+
+      this.keyboardListener = null;
+    }
+  }
+
+  private cancelDrag(): void {
+    if (!this.draggedNode()) return;
+
+    this.stopAutoPan();
+    this.panZoomInstance?.resume();
+
+    const allNodes =
+      this.#elementRef.nativeElement.querySelectorAll('.node-content');
+    allNodes.forEach(node => {
+      node.classList.remove('drag-over');
+      node.classList.remove('dragging');
+    });
+
+    this.draggedNode.set(null);
+    this.dragOverNode.set(null);
+
+    this.removeKeyboardListener();
+  }
+
+  /**
+   * Handles the drag end event for a node.
+   * @param event - The drag event
+   * @param node - The node that was being dragged
+   */
+  protected onDragEnd(event: DragEvent, node: OrgChartNode<T>): void {
+    if (!this.draggable()) return;
+
+    this.nodeDragEnd.emit(node);
+    this.draggedNode.set(null);
+    this.dragOverNode.set(null);
+
+    this.stopAutoPan();
+    this.removeKeyboardListener();
+
+    this.panZoomInstance?.resume();
+
+    const target = event.target as HTMLElement;
+    const nodeContent = target.closest('.node-content') as HTMLElement;
+
+    if (nodeContent) {
+      nodeContent.classList.remove('dragging');
+    }
+
+    const allNodes =
+      this.#elementRef.nativeElement.querySelectorAll('.node-content');
+    allNodes.forEach(node => node.classList.remove('drag-over'));
+  }
+
+  /**
+   * Handles the drag over event for a node.
+   * @param event - The drag event
+   * @param node - The node being dragged over
+   */
+  protected onDragOver(event: DragEvent, node: OrgChartNode<T>): void {
+    if (!this.draggable() || !this.draggedNode()) return;
+
+    event.preventDefault();
+
+    const draggedNode = this.draggedNode();
+    if (!draggedNode) return;
+
+    if (this.isNodeDescendant(node, draggedNode)) {
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'none';
+      }
+      return;
+    }
+
+    const canDrop = this.canDropNode();
+
+    if (canDrop && !canDrop(draggedNode, node)) {
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'none';
+      }
+      return;
+    }
+
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+
+    this.dragOverNode.set(node);
+  }
+
+  /**
+   * Handles the drag over event on the container for auto-panning.
+   * @param event - The drag event
+   */
+  protected onContainerDragOver(event: DragEvent): void {
+    if (!this.draggable() || !this.draggedNode()) return;
+
+    event.preventDefault();
+
+    this.handleAutoPan(event);
+  }
+
+  /**
+   * Handles the drag enter event for a node.
+   * @param event - The drag event
+   * @param node - The node being entered
+   */
+  protected onDragEnter(event: DragEvent, node: OrgChartNode<T>): void {
+    if (!this.draggable() || !this.draggedNode()) return;
+
+    const draggedNode = this.draggedNode();
+    if (!draggedNode) return;
+
+    if (this.isNodeDescendant(node, draggedNode)) {
+      return;
+    }
+
+    const canDrop = this.canDropNode();
+
+    if (canDrop && !canDrop(draggedNode, node)) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    const nodeElement = target.closest('.node-content') as HTMLElement;
+
+    if (nodeElement) {
+      nodeElement.classList.add('drag-over');
+    }
+  }
+
+  /**
+   * Handles the drag leave event for a node.
+   * @param event - The drag event
+   */
+  protected onDragLeave(event: DragEvent): void {
+    if (!this.draggable()) return;
+
+    const target = event.target as HTMLElement;
+    const relatedTarget = event.relatedTarget as HTMLElement;
+    const nodeElement = target.closest('.node-content') as HTMLElement;
+
+    if (nodeElement && !nodeElement.contains(relatedTarget)) {
+      nodeElement.classList.remove('drag-over');
+    }
+  }
+
+  /**
+   * Handles the drop event for a node.
+   * @param event - The drag event
+   * @param targetNode - The node where the drop occurred
+   */
+  protected onDrop(event: DragEvent, targetNode: OrgChartNode<T>): void {
+    if (!this.draggable()) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const draggedNode = this.draggedNode();
+    if (!draggedNode) return;
+
+    if (this.isNodeDescendant(targetNode, draggedNode)) {
+      return;
+    }
+
+    const canDrop = this.canDropNode();
+
+    if (canDrop && !canDrop(draggedNode, targetNode)) {
+      return;
+    }
+
+    this.nodeDrop.emit({
+      draggedNode,
+      targetNode,
+    });
+
+    const target = event.target as HTMLElement;
+    const nodeElement = target.closest('.node-content') as HTMLElement;
+
+    if (nodeElement) {
+      nodeElement.classList.remove('drag-over');
+    }
+
+    this.dragOverNode.set(null);
+
+    this.stopAutoPan();
+    this.panZoomInstance?.resume();
+  }
+
+  /**
+   * Checks if a node is a descendant of another node.
+   * @param node - The node to check
+   * @param potentialAncestor - The potential ancestor node
+   * @returns true if node is a descendant of potentialAncestor
+   */
+  private isNodeDescendant(
+    node: OrgChartNode<T>,
+    potentialAncestor: OrgChartNode<T>
+  ): boolean {
+    if (node.id === potentialAncestor.id) {
+      return true;
+    }
+
+    if (!potentialAncestor.children?.length) {
+      return false;
+    }
+
+    return potentialAncestor.children.some(child =>
+      this.isNodeDescendant(node, child as OrgChartNode<T>)
+    );
+  }
+
+  private handleAutoPan(event: DragEvent): void {
+    const hostElement = this.#elementRef.nativeElement;
+    const rect = hostElement.getBoundingClientRect();
+
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    let panX = 0;
+    let panY = 0;
+
+    // Check left edge
+    if (mouseX < this.dragEdgeThreshold()) {
+      panX = this.dragAutoPanSpeed();
+    }
+    // Check right edge
+    else if (mouseX > rect.width - this.dragEdgeThreshold()) {
+      panX = -this.dragAutoPanSpeed();
+    }
+
+    // Check top edge
+    if (mouseY < this.dragEdgeThreshold()) {
+      panY = this.dragAutoPanSpeed();
+    }
+    // Check bottom edge
+    else if (mouseY > rect.height - this.dragEdgeThreshold()) {
+      panY = -this.dragAutoPanSpeed();
+    }
+
+    // Start or update auto-panning
+    if (panX !== 0 || panY !== 0) {
+      this.startAutoPan(panX, panY);
+    } else {
+      this.stopAutoPan();
+    }
+  }
+
+  private startAutoPan(panX: number, panY: number): void {
+    this.stopAutoPan();
+
+    this.autoPanInterval = window.setInterval(() => {
+      if (!this.panZoomInstance) return;
+
+      const transform = this.panZoomInstance.getTransform();
+      const newX = transform.x + panX;
+      const newY = transform.y + panY;
+
+      this.panZoomInstance.moveTo(newX, newY);
+    }, 16); // ~60fps
+  }
+
+  private stopAutoPan(): void {
+    if (this.autoPanInterval !== null) {
+      clearInterval(this.autoPanInterval);
+
+      this.autoPanInterval = null;
+    }
+  }
+
   private calculateScale(): void {
     const transform = this.panZoomInstance?.getTransform();
     const currentScale = transform?.scale ?? 0;
@@ -628,6 +1097,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
     if (minZoom === maxZoom) {
       this.scale.set(0);
+
       return;
     }
 
@@ -715,6 +1185,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stopAutoPan();
+    this.removeKeyboardListener();
     this.panZoomInstance?.dispose();
   }
 }

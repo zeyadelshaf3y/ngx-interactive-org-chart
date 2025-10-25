@@ -27,6 +27,7 @@ interface OrgChartConfigTheme {
     readonly minWidth: string;
     readonly maxHeight: string;
     readonly minHeight: string;
+    readonly dragOverOutlineColor: string;
   };
   readonly connector: {
     readonly color: string;
@@ -61,6 +62,11 @@ export interface OrgChartToggleNodeArgs<T> {
   readonly node: OrgChartNode<T>;
   readonly targetNode: string;
   readonly collapse?: boolean;
+}
+
+export interface OrgChartDropNodeEventArgs<T> {
+  readonly draggedNode: OrgChartNode<T>;
+  readonly targetNode: OrgChartNode<T>;
 }
 
 type DeepPartial<T> = {

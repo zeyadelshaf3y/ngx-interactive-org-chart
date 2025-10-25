@@ -18,7 +18,9 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🔍 **Searchable Nodes** - Easily find nodes in large charts
 - 🧭 **Focus & Highlight** - Quickly navigate to specific nodes
 - 📊 **Custom Node Templates** - Use Angular templates for nodes
-- 📈 **Dynamic Data Binding** - Reactive updates with Angular signals
+- �️ **Drag & Drop** - Reorganize nodes with drag and drop support
+- 🎯 **Custom Drag Handles** - Use custom templates for drag handles
+- �📈 **Dynamic Data Binding** - Reactive updates with Angular signals
 - 📦 **Tree Shakable** - Import only what you need
 - 🔄 **Collapsible Nodes** - Expand/collapse functionality
 - 🌐 **RTL Support** - Right-to-left text direction
@@ -277,6 +279,15 @@ resetView() {
 | `highlightZoomNodeWidthRatio`  | `number`                      | `0.3`        | Node width ratio relative to viewport when highlighting (0.1-1.0)  |
 | `highlightZoomNodeHeightRatio` | `number`                      | `0.4`        | Node height ratio relative to viewport when highlighting (0.1-1.0) |
 | `highlightZoomMinimum`         | `number`                      | `0.8`        | Minimum zoom level when highlighting a node                        |
+| `draggable`                    | `boolean`                     | `false`      | Enable drag and drop functionality for nodes                       |
+
+### Component Events
+
+| Event           | Type                                                            | Description                                 |
+| --------------- | --------------------------------------------------------------- | ------------------------------------------- |
+| `nodeDrop`      | `{ draggedNode: OrgChartNode<T>, targetNode: OrgChartNode<T> }` | Emitted when a node is dropped onto another |
+| `nodeDragStart` | `OrgChartNode<T>`                                               | Emitted when a node drag operation starts   |
+| `nodeDragEnd`   | `OrgChartNode<T>`                                               | Emitted when a node drag operation ends     |
 
 ### Component Methods
 
@@ -588,6 +599,219 @@ The custom template receives the node data through the `let-node="node"` directi
 - `node.children` - Array of child nodes
 - `node.collapsed` - Current collapsed state
 - `node.descendantsCount` - Total number of descendants (useful for displaying counts)
+
+## 🖱️ Drag & Drop
+
+The component supports drag and drop functionality, allowing users to reorganize the organizational chart dynamically. The library provides events and helper functions to handle the data restructuring.
+
+### Basic Drag & Drop Setup
+
+```typescript
+import { Component, signal } from '@angular/core';
+import {
+  NgxInteractiveOrgChart,
+  OrgChartNode,
+  moveNode,
+} from 'ngx-interactive-org-chart';
+
+@Component({
+  selector: 'app-drag-drop-demo',
+  standalone: true,
+  imports: [NgxInteractiveOrgChart],
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgData()"
+      [draggable]="true"
+      (nodeDrop)="onNodeDrop($event)"
+      (nodeDragStart)="onDragStart($event)"
+      (nodeDragEnd)="onDragEnd($event)"
+    />
+  `,
+})
+export class DragDropDemoComponent {
+  orgData = signal<OrgChartNode>({
+    id: '1',
+    name: 'CEO',
+    children: [
+      { id: '2', name: 'CTO', children: [] },
+      { id: '3', name: 'CFO', children: [] },
+    ],
+  });
+
+  /**
+   * Handle node drop event.
+   * IMPORTANT: The library does NOT modify your data automatically.
+   * You must handle the data restructuring yourself.
+   */
+  onNodeDrop(event: { draggedNode: OrgChartNode; targetNode: OrgChartNode }) {
+    const currentData = this.orgData();
+
+    // Option 1: Use the built-in helper function (recommended)
+    const updatedData = moveNode(
+      currentData,
+      event.draggedNode.id,
+      event.targetNode.id
+    );
+
+    if (updatedData) {
+      this.orgData.set(updatedData);
+      // Optionally save to backend
+      // this.api.updateOrgStructure(updatedData);
+    } else {
+      alert('Cannot move node: Invalid operation');
+    }
+
+    // Option 2: Implement your own custom logic
+    // const updatedData = this.customMoveLogic(currentData, event);
+    // this.orgData.set(updatedData);
+  }
+
+  onDragStart(node: OrgChartNode) {
+    console.log('Drag started:', node.name);
+  }
+
+  onDragEnd(node: OrgChartNode) {
+    console.log('Drag ended:', node.name);
+  }
+}
+```
+
+### Custom Drag Handle
+
+By default, the entire node is draggable. You can provide a custom drag handle template to specify which part of the node should be used for dragging:
+
+```typescript
+@Component({
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgData()"
+      [draggable]="true"
+      (nodeDrop)="onNodeDrop($event)"
+    >
+      <!-- Custom node template -->
+      <ng-template #nodeTemplate let-node="node">
+        <div class="custom-node">
+          <h3>{{ node.name }}</h3>
+          <p>{{ node.data?.title }}</p>
+        </div>
+      </ng-template>
+
+      <!-- Custom drag handle template -->
+      <ng-template #dragHandleTemplate let-node="node">
+        <button class="drag-handle" title="Drag to move">
+          ⋮⋮
+        </button>
+      </ng-template>
+    </ngx-interactive-org-chart>
+  `,
+  styles: [`
+    .drag-handle {
+      cursor: move;
+      padding: 4px 8px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      user-select: none;
+    }
+
+    .drag-handle:hover {
+      background: #e0e0e0;
+    }
+  `]
+})
+```
+
+### Helper Functions
+
+The library provides several helper functions for common tree operations:
+
+```typescript
+import {
+  moveNode,
+  findNode,
+  removeNode,
+  addNodeToParent,
+  isNodeDescendant,
+} from 'ngx-interactive-org-chart';
+
+// Move a node to a new parent
+const updatedTree = moveNode(tree, draggedNodeId, targetParentId);
+
+// Find a specific node by ID
+const node = findNode(tree, nodeId);
+
+// Remove a node from the tree
+const treeWithoutNode = removeNode(tree, nodeId);
+
+// Add a node to a specific parent
+const treeWithNewNode = addNodeToParent(tree, parentId, newNode);
+
+// Check if a node is a descendant of another
+const isDescendant = isNodeDescendant(ancestorNode, descendantId);
+```
+
+### Drag & Drop Features
+
+- **Auto-panning**: Automatically pans the view when dragging near viewport edges
+- **Visual Feedback**: Shows drag-over state on target nodes
+- **Validation**: Prevents dropping nodes on themselves or their descendants
+- **Custom Handles**: Optional custom drag handle templates
+- **Events**: Full control with dragStart, dragEnd, and drop events
+- **Helper Functions**: Built-in utilities for tree manipulation
+- **Pure Functions**: All helpers are immutable and return new tree structures
+
+### Data Handling Pattern
+
+**Important**: The library follows a controlled component pattern and does NOT modify your data automatically. This design gives you:
+
+- ✅ **Full control** over validation logic
+- ✅ **Backend synchronization** capabilities
+- ✅ **Custom business rules** implementation
+- ✅ **Undo/redo** functionality support
+- ✅ **Optimistic updates** with rollback
+
+**Pattern:**
+
+1. User drags and drops a node
+2. Library emits `nodeDrop` event with source and target nodes
+3. You handle the event and restructure your data
+4. Update your data signal/input
+5. Library automatically re-renders the updated structure
+
+```typescript
+onNodeDrop(event: { draggedNode: OrgChartNode; targetNode: OrgChartNode }) {
+  // 1. Get current data
+  const currentData = this.orgData();
+
+  // 2. Validate the operation (optional)
+  if (!this.canMove(event.draggedNode, event.targetNode)) {
+    this.showError('Cannot move this node');
+    return;
+  }
+
+  // 3. Update the data structure
+  const updatedData = moveNode(
+    currentData,
+    event.draggedNode.id,
+    event.targetNode.id
+  );
+
+  if (!updatedData) return;
+
+  // 4. Update state (with rollback capability)
+  const previousData = currentData;
+  this.orgData.set(updatedData);
+
+  // 5. Sync with backend
+  this.api.updateOrgChart(updatedData).subscribe({
+    error: () => {
+      // Rollback on error
+      this.orgData.set(previousData);
+      this.showError('Failed to update');
+    }
+  });
+}
+```
 
 ## 🎨 Styling
 
