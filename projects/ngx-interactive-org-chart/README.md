@@ -18,9 +18,9 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🔍 **Searchable Nodes** - Easily find nodes in large charts
 - 🧭 **Focus & Highlight** - Quickly navigate to specific nodes
 - 📊 **Custom Node Templates** - Use Angular templates for nodes
-- �️ **Drag & Drop** - Reorganize nodes with drag and drop support
+- 🖱️ **Drag & Drop** - Reorganize nodes with drag and drop support
 - 🎯 **Custom Drag Handles** - Use custom templates for drag handles
-- �📈 **Dynamic Data Binding** - Reactive updates with Angular signals
+- 📈 **Dynamic Data Binding** - Reactive updates with Angular signals
 - 📦 **Tree Shakable** - Import only what you need
 - 🔄 **Collapsible Nodes** - Expand/collapse functionality
 - 🌐 **RTL Support** - Right-to-left text direction
@@ -30,14 +30,14 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🎪 **Angular 20+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
-## � Version Compatibility
+## 📋 Version Compatibility
 
 | ngx-interactive-org-chart | Angular Version | Notes           |
 | ------------------------- | --------------- | --------------- |
 | 1.1.4                     | Angular 19      | Stable release  |
 | 1.1.5+                    | Angular 20+     | Latest features |
 
-## �🚀 Installation
+## 🚀 Installation
 
 ```bash
 npm install ngx-interactive-org-chart
