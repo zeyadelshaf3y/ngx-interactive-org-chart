@@ -5,8 +5,12 @@
     functionalities.
   </p>
 
-  <section class="overview__demo">
-    <section class="overview__toolbar">
+  <section class="overview__toolbar-wrapper">
+    <div
+      class="overview__toolbar-shadow overview__toolbar-shadow--left"
+      [class.overview__toolbar-shadow--visible]="showLeftShadow()"
+    ></div>
+    <section class="overview__toolbar" #toolbar (scroll)="onToolbarScroll($event)">
       @for (button of toolbarButtons(); track $index) {
         @if (button?.isText) {
           <small class="overview__toolbar-text">{{ button?.label }}</small>
@@ -27,7 +31,12 @@
         }
       }
     </section>
-
+    <div
+      class="overview__toolbar-shadow overview__toolbar-shadow--right"
+      [class.overview__toolbar-shadow--visible]="showRightShadow()"
+    ></div>
+  </section>
+  <section class="overview__demo">
     <ngx-interactive-org-chart
       [data]="data() ?? {}"
       [themeOptions]="themeOptions"

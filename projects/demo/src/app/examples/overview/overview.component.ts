@@ -1,4 +1,12 @@
-import { Component, computed, effect, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  signal,
+  viewChild,
+  ElementRef,
+  afterNextRender,
+} from '@angular/core';
 import {
   NgxInteractiveOrgChart,
   NgxInteractiveOrgChartLayout,
@@ -33,12 +41,24 @@ interface ToolbarButton {
 })
 export class OverviewComponent {
   readonly orgChart = viewChild(NgxInteractiveOrgChart<OverviewData>);
+  readonly toolbar = viewChild<ElementRef<HTMLElement>>('toolbar');
 
   protected readonly data = signal<OrgChartNode<OverviewData> | null>(null);
+
+  protected readonly showLeftShadow = signal<boolean>(false);
+  protected readonly showRightShadow = signal<boolean>(false);
 
   private readonly setData = effect(() => {
     this.data.set(this.mapDataToOrgChartNode(OVERVIEW_MOCK_DATA));
   });
+
+  constructor() {
+    // Check initial scroll state after view is rendered
+    afterNextRender(() => {
+      this.checkScrollState();
+      this.observeToolbarResize();
+    });
+  }
 
   protected readonly overviewDataTypeEnum = OverviewDataTypeEnum;
 
@@ -47,7 +67,7 @@ export class OverviewComponent {
       background: 'var(--bg-primary)',
       outlineColor: 'transparent',
       activeOutlineColor: 'transparent',
-      shadow: '0 0 0.125rem rgba(0, 0, 0, 0.2)',
+      shadow: '0 0 0.125rem var(--node-shadow-color)',
       dragOverOutlineColor: 'var(--text-primary)',
     },
     collapseButton: {
@@ -161,6 +181,48 @@ export class OverviewComponent {
     );
 
     this.data.set(updatedData);
+  }
+
+  protected onToolbarScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+
+    this.updateScrollShadows(element);
+  }
+
+  private checkScrollState(): void {
+    const toolbarElement = this.toolbar()?.nativeElement;
+
+    if (toolbarElement) {
+      this.updateScrollShadows(toolbarElement);
+    }
+  }
+
+  private observeToolbarResize(): void {
+    const toolbarElement = this.toolbar()?.nativeElement;
+    if (!toolbarElement) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      this.updateScrollShadows(toolbarElement);
+    });
+
+    resizeObserver.observe(toolbarElement);
+  }
+
+  private updateScrollShadows(element: HTMLElement): void {
+    const scrollLeft = element.scrollLeft;
+    const maxScrollLeft = element.scrollWidth - element.clientWidth;
+
+    console.log('Scroll Debug:', {
+      scrollLeft,
+      maxScrollLeft,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      hasScroll: maxScrollLeft > 0,
+    });
+
+    this.showLeftShadow.set(scrollLeft > 1);
+
+    this.showRightShadow.set(scrollLeft < maxScrollLeft - 1);
   }
 
   private reset(): void {
