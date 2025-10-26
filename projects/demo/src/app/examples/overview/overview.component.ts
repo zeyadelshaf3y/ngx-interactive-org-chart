@@ -53,7 +53,6 @@ export class OverviewComponent {
   });
 
   constructor() {
-    // Check initial scroll state after view is rendered
     afterNextRender(() => {
       this.checkScrollState();
       this.observeToolbarResize();
@@ -93,20 +92,6 @@ export class OverviewComponent {
     const isVerticalLayout = this.orgChartLayout() === 'vertical';
 
     return [
-      {
-        label: isVerticalLayout ? 'Switch to Horizontal' : 'Switch to Vertical',
-        icon: isVerticalLayout ? 'logo-horizontal' : 'logo',
-        onClick: () => {
-          this.orgChartLayout.set(isVerticalLayout ? 'horizontal' : 'vertical');
-        },
-      },
-      {
-        title: 'Highlight Engineering Department',
-        label: 'Highlight Engineering Department',
-        icon: 'target',
-        onClick: () => this.orgChart()?.highlightNode(2),
-      },
-
       {
         title: 'Zoom Out',
         icon: 'zoom-out',
@@ -150,6 +135,19 @@ export class OverviewComponent {
           : 'Enable Drag & Drop',
         icon: 'drag-drop',
         onClick: () => this.draggableEnabled.update(v => !v),
+      },
+      {
+        label: isVerticalLayout ? 'Switch to Horizontal' : 'Switch to Vertical',
+        icon: isVerticalLayout ? 'logo-horizontal' : 'logo',
+        onClick: () => {
+          this.orgChartLayout.set(isVerticalLayout ? 'horizontal' : 'vertical');
+        },
+      },
+      {
+        title: 'Highlight Engineering Department',
+        label: 'Highlight Engineering Department',
+        icon: 'target',
+        onClick: () => this.orgChart()?.highlightNode(2),
       },
     ];
   });
@@ -211,14 +209,6 @@ export class OverviewComponent {
   private updateScrollShadows(element: HTMLElement): void {
     const scrollLeft = element.scrollLeft;
     const maxScrollLeft = element.scrollWidth - element.clientWidth;
-
-    console.log('Scroll Debug:', {
-      scrollLeft,
-      maxScrollLeft,
-      scrollWidth: element.scrollWidth,
-      clientWidth: element.clientWidth,
-      hasScroll: maxScrollLeft > 0,
-    });
 
     this.showLeftShadow.set(scrollLeft > 1);
 
