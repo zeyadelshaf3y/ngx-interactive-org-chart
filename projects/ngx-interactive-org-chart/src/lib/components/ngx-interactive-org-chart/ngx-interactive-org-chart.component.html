@@ -28,6 +28,7 @@
       (dragenter)="onDragEnter($event, node)"
       (dragleave)="onDragLeave($event)"
       (drop)="onDrop($event, node)"
+      (touchstart)="customDragHandleTemplate ? null : onTouchStart($event, node)"
     >
       @if (customNodeTemplate) {
         <ng-container
@@ -46,6 +47,7 @@
           [attr.draggable]="true"
           (dragstart)="onDragStart($event, node)"
           (dragend)="onDragEnd($event, node)"
+          (touchstart)="onTouchStart($event, node)"
         >
           <ng-container
             [ngTemplateOutlet]="customDragHandleTemplate"

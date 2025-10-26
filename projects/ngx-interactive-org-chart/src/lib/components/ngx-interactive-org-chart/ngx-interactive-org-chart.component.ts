@@ -20,13 +20,38 @@ import {
   OrgChartDropNodeEventArgs,
   OrgChartNode,
 } from '../../models';
-import { mapNodesRecursively, toggleNodeCollapse } from '../../helpers';
+import {
+  mapNodesRecursively,
+  toggleNodeCollapse,
+  createTouchDragGhost,
+  updateTouchGhostPosition,
+} from '../../helpers';
 
 import createPanZoom, { PanZoom } from 'panzoom';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { DEFAULT_THEME_OPTIONS } from './default-theme-options';
 
+// Constants
 const RESET_DELAY = 300; // ms
+const TOUCH_DRAG_THRESHOLD = 10; // pixels
+const AUTO_PAN_EDGE_THRESHOLD = 0.1; // 10% of container dimensions
+const AUTO_PAN_SPEED = 15; // pixels per frame
+
+/**
+ * State for tracking touch drag operations.
+ */
+interface TouchDragState<T> {
+  active: boolean;
+  node: OrgChartNode<T> | null;
+  startX: number;
+  startY: number;
+  currentX: number;
+  currentY: number;
+  dragThreshold: number;
+  ghostElement: HTMLElement | null;
+  ghostScaledWidth: number;
+  ghostScaledHeight: number;
+}
 
 @Component({
   standalone: true,
@@ -286,15 +311,16 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   /**
    * The distance in pixels from the viewport edge to trigger auto-panning during drag.
-   * @default 150
+   * The threshold is calculated automatically as 10% of the container dimensions for better responsiveness across different screen sizes.
+   * @default 0.1
    */
-  readonly dragEdgeThreshold = input<number>(150);
+  readonly dragEdgeThreshold = input<number>(AUTO_PAN_EDGE_THRESHOLD);
 
   /**
    * The speed of auto-panning in pixels per frame during drag.
    * @default 15
    */
-  readonly dragAutoPanSpeed = input<number>(15);
+  readonly dragAutoPanSpeed = input<number>(AUTO_PAN_SPEED);
 
   /**
    * The minimum zoom level for the chart when highlighting a node.
@@ -362,6 +388,19 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   private autoPanInterval: number | null = null;
   private keyboardListener: ((event: KeyboardEvent) => void) | null = null;
+
+  private touchDragState: TouchDragState<T> = {
+    active: false,
+    node: null,
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+    dragThreshold: TOUCH_DRAG_THRESHOLD,
+    ghostElement: null,
+    ghostScaledWidth: 0,
+    ghostScaledHeight: 0,
+  };
 
   protected panZoomInstance: PanZoom | null = null;
 
@@ -781,12 +820,6 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     if (event.dataTransfer && nodeContent) {
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', node.id?.toString() || '');
-
-      const rect = nodeContent.getBoundingClientRect();
-      const offsetX = event.clientX - rect.left;
-      const offsetY = event.clientY - rect.top;
-
-      event.dataTransfer.setDragImage(nodeContent, offsetX, offsetY);
     }
 
     if (nodeContent) {
@@ -835,12 +868,20 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     allNodes.forEach(node => {
       node.classList.remove('drag-over');
       node.classList.remove('dragging');
+      node.classList.remove('drag-not-allowed');
     });
 
     this.draggedNode.set(null);
     this.dragOverNode.set(null);
 
     this.removeKeyboardListener();
+
+    // Clean up touch drag state if active
+    if (this.touchDragState.active) {
+      this.removeTouchGhostElement();
+      this.removeTouchListeners();
+      this.resetTouchDragState();
+    }
   }
 
   /**
@@ -1030,6 +1071,409 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     );
   }
 
+  /**
+   * Handles the touch start event for drag on mobile devices.
+   * @param event - The touch event
+   * @param node - The node being touched
+   */
+  protected onTouchStart(event: TouchEvent, node: OrgChartNode<T>): void {
+    if (!this.draggable()) return;
+
+    const canDrag = this.canDragNode();
+    if (canDrag && !canDrag(node)) {
+      return;
+    }
+
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    this.touchDragState.node = node;
+    this.touchDragState.startX = touch.clientX;
+    this.touchDragState.startY = touch.clientY;
+    this.touchDragState.currentX = touch.clientX;
+    this.touchDragState.currentY = touch.clientY;
+    this.touchDragState.active = false;
+
+    document.addEventListener('touchmove', this.onTouchMoveDocument, {
+      passive: false,
+    });
+
+    document.addEventListener('touchend', this.onTouchEndDocument);
+    document.addEventListener('touchcancel', this.onTouchEndDocument);
+  }
+
+  /**
+   * Handles touch move event during drag on mobile devices.
+   */
+  private onTouchMoveDocument(event: TouchEvent): void {
+    if (!this.touchDragState.node) return;
+
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    this.touchDragState.currentX = touch.clientX;
+    this.touchDragState.currentY = touch.clientY;
+
+    if (!this.touchDragState.active) {
+      const deltaX = Math.abs(touch.clientX - this.touchDragState.startX);
+      const deltaY = Math.abs(touch.clientY - this.touchDragState.startY);
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+      if (distance >= this.touchDragState.dragThreshold) {
+        this.touchDragState.active = true;
+        this.draggedNode.set(this.touchDragState.node);
+        this.nodeDragStart.emit(this.touchDragState.node);
+        this.setupKeyboardListener();
+
+        this.panZoomInstance?.pause();
+
+        this.createTouchGhostElement(this.touchDragState.node);
+
+        const nodeElement = this.getNodeElement(this.touchDragState.node);
+        if (nodeElement) {
+          nodeElement.classList.add('dragging');
+        }
+      }
+    }
+
+    if (this.touchDragState.active) {
+      event.preventDefault();
+
+      this.updateTouchGhostPosition(touch.clientX, touch.clientY);
+
+      this.handleTouchAutoPan(touch.clientX, touch.clientY);
+
+      const elementUnderTouch = this.getElementUnderTouch(
+        touch.clientX,
+        touch.clientY
+      );
+
+      if (elementUnderTouch) {
+        const nodeElement = elementUnderTouch.closest(
+          '.node-content'
+        ) as HTMLElement;
+
+        if (nodeElement && nodeElement.id) {
+          const nodeId = this.getNodeIdFromElement(nodeElement);
+          const node = this.findNodeById(nodeId);
+
+          if (node) {
+            this.handleTouchDragOver(node);
+          } else {
+            this.clearDragOverState();
+          }
+        } else {
+          this.clearDragOverState();
+        }
+      } else {
+        this.clearDragOverState();
+      }
+    }
+  }
+
+  /**
+   * Handles touch end event during drag on mobile devices.
+   */
+  private onTouchEndDocument(event: TouchEvent): void {
+    if (!this.touchDragState.node) return;
+
+    if (this.touchDragState.active) {
+      let targetNode: OrgChartNode<T> | null = null;
+
+      const touch =
+        event.changedTouches[0] ||
+        (event.touches.length > 0 ? event.touches[0] : null);
+
+      if (touch) {
+        const elementUnderTouch = this.getElementUnderTouch(
+          touch.clientX,
+          touch.clientY
+        );
+
+        if (elementUnderTouch) {
+          const nodeElement = elementUnderTouch.closest(
+            '.node-content'
+          ) as HTMLElement;
+
+          if (nodeElement && nodeElement.id) {
+            const nodeId = this.getNodeIdFromElement(nodeElement);
+            targetNode = this.findNodeById(nodeId);
+          }
+        }
+      }
+
+      const draggedNode = this.draggedNode();
+
+      if (targetNode && draggedNode && targetNode.id !== draggedNode.id) {
+        const isDescendant = this.isNodeDescendant(targetNode, draggedNode);
+        const canDrop = this.canDropNode();
+        const dropAllowed =
+          !isDescendant && (!canDrop || canDrop(draggedNode, targetNode));
+
+        if (dropAllowed) {
+          this.nodeDrop.emit({
+            draggedNode,
+            targetNode,
+          });
+        }
+      }
+
+      this.removeTouchGhostElement();
+      this.nodeDragEnd.emit(this.touchDragState.node);
+
+      const nodeElement = this.getNodeElement(this.touchDragState.node);
+      if (nodeElement) {
+        nodeElement.classList.remove('dragging');
+      }
+
+      this.clearDragOverState();
+      this.draggedNode.set(null);
+      this.stopAutoPan();
+      this.removeKeyboardListener();
+      this.panZoomInstance?.resume();
+    }
+
+    this.resetTouchDragState();
+    this.removeTouchListeners();
+  }
+
+  /**
+   * Resets the touch drag state to its initial values.
+   */
+  private resetTouchDragState(): void {
+    this.touchDragState = {
+      active: false,
+      node: null,
+      startX: 0,
+      startY: 0,
+      currentX: 0,
+      currentY: 0,
+      dragThreshold: TOUCH_DRAG_THRESHOLD,
+      ghostElement: null,
+      ghostScaledWidth: 0,
+      ghostScaledHeight: 0,
+    };
+  }
+
+  /**
+   * Removes touch event listeners from the document.
+   */
+  private removeTouchListeners(): void {
+    document.removeEventListener('touchmove', this.onTouchMoveDocument);
+    document.removeEventListener('touchend', this.onTouchEndDocument);
+    document.removeEventListener('touchcancel', this.onTouchEndDocument);
+  }
+
+  /**
+   * Creates a ghost element to follow the touch during drag.
+   */
+  private createTouchGhostElement(node: OrgChartNode<T>): void {
+    const nodeElement = this.getNodeElement(node);
+    if (!nodeElement) return;
+
+    const currentScale = this.panZoomInstance?.getTransform()?.scale ?? 1;
+
+    const result = createTouchDragGhost({
+      nodeElement,
+      currentScale,
+      touchX: this.touchDragState.currentX,
+      touchY: this.touchDragState.currentY,
+    });
+
+    this.touchDragState.ghostElement = result.wrapper;
+    this.touchDragState.ghostScaledWidth = result.scaledWidth;
+    this.touchDragState.ghostScaledHeight = result.scaledHeight;
+  }
+
+  /**
+   * Updates the position of the touch ghost element.
+   */
+  private updateTouchGhostPosition(x: number, y: number): void {
+    if (!this.touchDragState.ghostElement) return;
+
+    updateTouchGhostPosition(
+      this.touchDragState.ghostElement,
+      x,
+      y,
+      this.touchDragState.ghostScaledWidth,
+      this.touchDragState.ghostScaledHeight
+    );
+  }
+
+  /**
+   * Removes the touch ghost element.
+   */
+  private removeTouchGhostElement(): void {
+    if (this.touchDragState.ghostElement) {
+      this.touchDragState.ghostElement.remove();
+      this.touchDragState.ghostElement = null;
+    }
+  }
+
+  /**
+   * Gets the element under a touch point.
+   */
+  private getElementUnderTouch(x: number, y: number): Element | null {
+    const ghost = this.touchDragState.ghostElement;
+    const originalDisplay = ghost ? ghost.style.display : '';
+
+    if (ghost) {
+      ghost.style.display = 'none';
+    }
+
+    const element = document.elementFromPoint(x, y);
+
+    if (ghost) {
+      ghost.style.display = originalDisplay;
+    }
+
+    return element;
+  }
+
+  /**
+   * Handles touch drag over a node.
+   */
+  private handleTouchDragOver(node: OrgChartNode<T>): void {
+    const draggedNode = this.draggedNode();
+    if (!draggedNode) return;
+
+    if (node.id === draggedNode.id) {
+      this.clearDragOverState();
+      return;
+    }
+
+    if (this.isNodeDescendant(node, draggedNode)) {
+      this.clearDragOverState();
+      const nodeElement = this.getNodeElement(node);
+
+      if (nodeElement) {
+        nodeElement.classList.add('drag-not-allowed');
+      }
+
+      return;
+    }
+
+    const canDrop = this.canDropNode();
+
+    if (canDrop && !canDrop(draggedNode, node)) {
+      this.clearDragOverState();
+
+      const nodeElement = this.getNodeElement(node);
+
+      if (nodeElement) {
+        nodeElement.classList.add('drag-not-allowed');
+      }
+
+      return;
+    }
+
+    if (this.dragOverNode() !== node) {
+      this.clearDragOverState();
+
+      this.dragOverNode.set(node);
+      const nodeElement = this.getNodeElement(node);
+
+      if (nodeElement) {
+        nodeElement.classList.add('drag-over');
+      }
+    }
+  }
+
+  /**
+   * Clears all drag-over visual states.
+   */
+  private clearDragOverState(): void {
+    const allNodes =
+      this.#elementRef.nativeElement.querySelectorAll('.node-content');
+
+    allNodes.forEach(node => {
+      node.classList.remove('drag-over');
+      node.classList.remove('drag-not-allowed');
+    });
+
+    this.dragOverNode.set(null);
+  }
+
+  /**
+   * Gets a node element by node data.
+   */
+  private getNodeElement(node: OrgChartNode<T>): HTMLElement | null {
+    if (!node.id) return null;
+
+    const nodeId = this.getNodeId(node.id);
+
+    return this.#elementRef.nativeElement.querySelector(`#${nodeId}`);
+  }
+
+  /**
+   * Gets node ID from a DOM element.
+   */
+  private getNodeIdFromElement(element: HTMLElement): string | number {
+    const id = element.id.replace('node-', '');
+    const numId = parseInt(id, 10);
+
+    return isNaN(numId) ? id : numId;
+  }
+
+  /**
+   * Finds a node by ID in the tree.
+   */
+  private findNodeById(id: string | number): OrgChartNode<T> | null {
+    const nodes = this.nodes();
+    if (!nodes) return null;
+
+    const search = (node: OrgChartNode<T>): OrgChartNode<T> | null => {
+      if (node.id === id || node.id?.toString() === id.toString()) {
+        return node;
+      }
+
+      if (node.children) {
+        for (const child of node.children as OrgChartNode<T>[]) {
+          const found = search(child);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    return search(nodes);
+  }
+
+  /**
+   * Handles auto-panning during touch drag.
+   */
+  private handleTouchAutoPan(x: number, y: number): void {
+    const hostElement = this.#elementRef.nativeElement;
+    const rect = hostElement.getBoundingClientRect();
+
+    const touchX = x - rect.left;
+    const touchY = y - rect.top;
+
+    const thresholdX = rect.width * this.dragEdgeThreshold();
+    const thresholdY = rect.height * this.dragEdgeThreshold();
+
+    let panX = 0;
+    let panY = 0;
+
+    if (touchX < thresholdX) {
+      panX = this.dragAutoPanSpeed();
+    } else if (touchX > rect.width - thresholdX) {
+      panX = -this.dragAutoPanSpeed();
+    }
+
+    if (touchY < thresholdY) {
+      panY = this.dragAutoPanSpeed();
+    } else if (touchY > rect.height - thresholdY) {
+      panY = -this.dragAutoPanSpeed();
+    }
+
+    if (panX !== 0 || panY !== 0) {
+      this.startAutoPan(panX, panY);
+    } else {
+      this.stopAutoPan();
+    }
+  }
+
   private handleAutoPan(event: DragEvent): void {
     const hostElement = this.#elementRef.nativeElement;
     const rect = hostElement.getBoundingClientRect();
@@ -1037,28 +1481,24 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
+    const thresholdX = rect.width * this.dragEdgeThreshold();
+    const thresholdY = rect.height * this.dragEdgeThreshold();
+
     let panX = 0;
     let panY = 0;
 
-    // Check left edge
-    if (mouseX < this.dragEdgeThreshold()) {
+    if (mouseX < thresholdX) {
       panX = this.dragAutoPanSpeed();
-    }
-    // Check right edge
-    else if (mouseX > rect.width - this.dragEdgeThreshold()) {
+    } else if (mouseX > rect.width - thresholdX) {
       panX = -this.dragAutoPanSpeed();
     }
 
-    // Check top edge
-    if (mouseY < this.dragEdgeThreshold()) {
+    if (mouseY < thresholdY) {
       panY = this.dragAutoPanSpeed();
-    }
-    // Check bottom edge
-    else if (mouseY > rect.height - this.dragEdgeThreshold()) {
+    } else if (mouseY > rect.height - thresholdY) {
       panY = -this.dragAutoPanSpeed();
     }
 
-    // Start or update auto-panning
     if (panX !== 0 || panY !== 0) {
       this.startAutoPan(panX, panY);
     } else {
