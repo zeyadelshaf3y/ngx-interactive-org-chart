@@ -458,12 +458,11 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     }
 
     const container = this.panZoomContainer()?.nativeElement;
-    const hostingElement = this.#elementRef.nativeElement;
 
     this.panZoomInstance = createPanZoom(container, {
       initialZoom: this.getFitScale(),
-      initialX: hostingElement.offsetWidth / 2,
-      initialY: hostingElement.offsetHeight / 2,
+      initialX: container.offsetWidth / 2,
+      initialY: container.offsetHeight / 2,
       enableTextSelection: false,
       minZoom: this.minZoom(),
       maxZoom: this.maxZoom(),
