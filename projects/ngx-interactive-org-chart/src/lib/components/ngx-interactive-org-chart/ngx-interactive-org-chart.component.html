@@ -30,17 +30,19 @@
       (drop)="onDrop($event, node)"
       (touchstart)="customDragHandleTemplate ? null : onTouchStart($event, node)"
     >
-      @if (customNodeTemplate) {
-        <ng-container
-          [ngTemplateOutlet]="customNodeTemplate"
-          [ngTemplateOutletContext]="{
-            $implicit: node,
-            node: node,
-          }"
-        ></ng-container>
-      } @else {
-        <span>{{ node.name }}</span>
-      }
+      <div class="node-content-wrapper">
+        @if (customNodeTemplate) {
+          <ng-container
+            [ngTemplateOutlet]="customNodeTemplate"
+            [ngTemplateOutletContext]="{
+              $implicit: node,
+              node: node,
+            }"
+          ></ng-container>
+        } @else {
+          <span>{{ node.name }}</span>
+        }
+      </div>
       @if (customDragHandleTemplate && draggable()) {
         <span
           class="drag-handle"

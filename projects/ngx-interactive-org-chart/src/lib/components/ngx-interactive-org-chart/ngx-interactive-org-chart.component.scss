@@ -323,6 +323,20 @@
       z-index: 1;
       box-sizing: content-box;
 
+      .node-content-wrapper {
+        display: contents;
+
+        // Prevent child images and elements from having default drag behavior
+        img,
+        svg {
+          user-select: none;
+          -webkit-user-drag: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+        }
+      }
+
       &.highlighted {
         animation: pulse 1.5s infinite;
       }

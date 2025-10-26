@@ -1,5 +1,6 @@
 import { NgClass, NgStyle, NgTemplateOutlet } from '@angular/common';
 import {
+  afterNextRender,
   AfterViewInit,
   Component,
   computed,
@@ -7,6 +8,7 @@ import {
   effect,
   ElementRef,
   inject,
+  Injector,
   input,
   OnDestroy,
   output,
@@ -139,6 +141,7 @@ interface TouchDragState<T> {
 })
 export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly #injector = inject(Injector);
 
   /**
    * Optional template for a custom node.
@@ -445,6 +448,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.initiatePanZoom();
+    this.disableChildDragging();
   }
 
   /**
@@ -1074,6 +1078,15 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
     this.stopAutoPan();
     this.panZoomInstance?.resume();
+
+    afterNextRender(
+      () => {
+        this.disableChildDragging();
+      },
+      {
+        injector: this.#injector,
+      }
+    );
   }
 
   /**
@@ -1656,5 +1669,23 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.stopAutoPan();
     this.removeKeyboardListener();
     this.panZoomInstance?.dispose();
+  }
+
+  /**
+   * Disables native dragging on child elements (images, SVGs, anchors) within nodes.
+   * This prevents child elements from interfering with the node's drag functionality.
+   * Called automatically via effect when nodes change.
+   */
+  private disableChildDragging(): void {
+    const hostingElement = this.#elementRef?.nativeElement;
+    if (!hostingElement) return;
+
+    const draggableChildren = hostingElement.querySelectorAll(
+      '.node-content-wrapper img, .node-content-wrapper a, .node-content-wrapper svg'
+    );
+
+    draggableChildren.forEach((element: Element) => {
+      (element as HTMLElement).setAttribute('draggable', 'false');
+    });
   }
 }
