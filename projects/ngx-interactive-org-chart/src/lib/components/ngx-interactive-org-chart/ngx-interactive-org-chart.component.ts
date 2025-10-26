@@ -1133,7 +1133,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   /**
    * Handles touch move event during drag on mobile devices.
    */
-  private onTouchMoveDocument(event: TouchEvent): void {
+  private onTouchMoveDocument = (event: TouchEvent): void => {
     if (!this.touchDragState.node) return;
 
     const touch = event.touches[0];
@@ -1197,12 +1197,12 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
         this.clearDragOverState();
       }
     }
-  }
+  };
 
   /**
    * Handles touch end event during drag on mobile devices.
    */
-  private onTouchEndDocument(event: TouchEvent): void {
+  private onTouchEndDocument = (event: TouchEvent): void => {
     if (!this.touchDragState.node) return;
 
     if (this.touchDragState.active) {
@@ -1263,7 +1263,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
     this.resetTouchDragState();
     this.removeTouchListeners();
-  }
+  };
 
   /**
    * Resets the touch drag state to its initial values.
