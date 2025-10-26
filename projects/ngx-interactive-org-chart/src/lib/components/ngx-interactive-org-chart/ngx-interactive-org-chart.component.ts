@@ -25,6 +25,7 @@ import {
   toggleNodeCollapse,
   createTouchDragGhost,
   updateTouchGhostPosition,
+  setDesktopDragImage,
 } from '../../helpers';
 
 import createPanZoom, { PanZoom } from 'panzoom';
@@ -385,6 +386,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   protected readonly draggedNode = signal<OrgChartNode<T> | null>(null);
 
   protected readonly dragOverNode = signal<OrgChartNode<T> | null>(null);
+
+  private readonly currentDragOverElement = signal<HTMLElement | null>(null);
 
   private autoPanInterval: number | null = null;
   private keyboardListener: ((event: KeyboardEvent) => void) | null = null;
@@ -820,6 +823,9 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     if (event.dataTransfer && nodeContent) {
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', node.id?.toString() || '');
+
+      // Set custom drag image for Safari compatibility
+      setDesktopDragImage(event, nodeContent);
     }
 
     if (nodeContent) {
@@ -895,6 +901,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.nodeDragEnd.emit(node);
     this.draggedNode.set(null);
     this.dragOverNode.set(null);
+    this.currentDragOverElement.set(null);
 
     this.stopAutoPan();
     this.removeKeyboardListener();
@@ -986,7 +993,17 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     const nodeElement = target.closest('.node-content') as HTMLElement;
 
     if (nodeElement) {
+      // Remove highlight from previous element
+      if (
+        this.currentDragOverElement() &&
+        this.currentDragOverElement() !== nodeElement
+      ) {
+        this.currentDragOverElement()?.classList.remove('drag-over');
+      }
+
+      // Add highlight to current element
       nodeElement.classList.add('drag-over');
+      this.currentDragOverElement.set(nodeElement);
     }
   }
 
@@ -998,11 +1015,22 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     if (!this.draggable()) return;
 
     const target = event.target as HTMLElement;
-    const relatedTarget = event.relatedTarget as HTMLElement;
     const nodeElement = target.closest('.node-content') as HTMLElement;
 
-    if (nodeElement && !nodeElement.contains(relatedTarget)) {
-      nodeElement.classList.remove('drag-over');
+    // Only remove highlight if we're leaving the entire node-content element
+    // Check if the event is leaving to go outside the node element
+    if (nodeElement && this.currentDragOverElement() === nodeElement) {
+      const rect = nodeElement.getBoundingClientRect();
+      const isOutside =
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom;
+
+      if (isOutside) {
+        nodeElement.classList.remove('drag-over');
+        this.currentDragOverElement.set(null);
+      }
     }
   }
 
@@ -1042,6 +1070,7 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       nodeElement.classList.remove('drag-over');
     }
 
+    this.currentDragOverElement.set(null);
     this.dragOverNode.set(null);
 
     this.stopAutoPan();

@@ -183,3 +183,37 @@ export function updateTouchGhostPosition(
   wrapper.style.left = x - scaledWidth / 2 + 'px';
   wrapper.style.top = y - scaledHeight / 2 + 'px';
 }
+
+/**
+ * Creates and sets a custom drag image for desktop drag and drop.
+ * This is required for Safari to show a drag preview properly.
+ *
+ * @param event - The drag event
+ * @param nodeElement - The node element being dragged
+ * @returns Cleanup function to remove the temporary drag image
+ */
+export function setDesktopDragImage(
+  event: DragEvent,
+  nodeElement: HTMLElement
+): void {
+  if (!event.dataTransfer) return;
+
+  // Create a styled clone for the drag image
+  const dragImage = cloneNodeWithStyles(nodeElement);
+  dragImage.style.position = 'absolute';
+  dragImage.style.top = '-9999px';
+  dragImage.style.left = '-9999px';
+  dragImage.style.opacity = '0.8';
+  document.body.appendChild(dragImage);
+
+  const rect = nodeElement.getBoundingClientRect();
+  const offsetX = event.clientX - rect.left;
+  const offsetY = event.clientY - rect.top;
+  event.dataTransfer.setDragImage(dragImage, offsetX, offsetY);
+
+  setTimeout(() => {
+    if (document.body.contains(dragImage)) {
+      document.body.removeChild(dragImage);
+    }
+  }, 0);
+}
