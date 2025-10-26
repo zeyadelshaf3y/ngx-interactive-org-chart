@@ -21,6 +21,9 @@
   --border-3: #d0d0d0;
 
   --border-radius: 0.5rem;
+
+  --shadow-color: rgba(255, 255, 255, 0.15);
+  --node-shadow-color: rgba(0, 0, 0, 0.2);
 }
 
 .dark-theme {
@@ -44,4 +47,7 @@
   --border-1: #2c2c2e;
   --border-2: #3a3a3c;
   --border-3: #48484a;
+
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --node-shadow-color: rgba(255, 255, 255, 0.2);
 }

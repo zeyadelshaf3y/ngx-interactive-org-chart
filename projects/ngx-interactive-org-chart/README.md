@@ -18,9 +18,9 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🔍 **Searchable Nodes** - Easily find nodes in large charts
 - 🧭 **Focus & Highlight** - Quickly navigate to specific nodes
 - 📊 **Custom Node Templates** - Use Angular templates for nodes
-- �️ **Drag & Drop** - Reorganize nodes with drag and drop support
+- 🖱️ **Drag & Drop** - Reorganize nodes with drag and drop support
 - 🎯 **Custom Drag Handles** - Use custom templates for drag handles
-- �📈 **Dynamic Data Binding** - Reactive updates with Angular signals
+- 📈 **Dynamic Data Binding** - Reactive updates with Angular signals
 - 📦 **Tree Shakable** - Import only what you need
 - 🔄 **Collapsible Nodes** - Expand/collapse functionality
 - 🌐 **RTL Support** - Right-to-left text direction
@@ -30,14 +30,14 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🎪 **Angular 20+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
-## � Version Compatibility
+## 📋 Version Compatibility
 
 | ngx-interactive-org-chart | Angular Version | Notes           |
 | ------------------------- | --------------- | --------------- |
 | 1.1.4                     | Angular 19      | Stable release  |
 | 1.1.5+                    | Angular 20+     | Latest features |
 
-## �🚀 Installation
+## 🚀 Installation
 
 ```bash
 npm install ngx-interactive-org-chart
@@ -283,7 +283,7 @@ resetView() {
 | `draggable`                    | `boolean`                      | `false`      | Enable drag and drop functionality for nodes                       |
 | `canDragNode`                  | `(node) => boolean`            | `undefined`  | Predicate function to determine if a node can be dragged           |
 | `canDropNode`                  | `(dragged, target) => boolean` | `undefined`  | Predicate function to validate drop operations                     |
-| `dragEdgeThreshold`            | `number`                       | `150`        | Distance in pixels from edge to trigger auto-panning during drag   |
+| `dragEdgeThreshold`            | `number`                       | `0.1`        | Auto-pan threshold is calculated as 10% of container dimensions    |
 | `dragAutoPanSpeed`             | `number`                       | `15`         | Speed of auto-panning in pixels per frame during drag              |
 
 ### Component Events
@@ -766,6 +766,58 @@ const isDescendant = isNodeDescendant(ancestorNode, descendantId);
 - **Events**: Full control with dragStart, dragEnd, and drop events
 - **Helper Functions**: Built-in utilities for tree manipulation
 - **Pure Functions**: All helpers are immutable and return new tree structures
+- **Touch Screen Support**: Full drag and drop support on mobile devices and tablets
+
+### Touch Screen Support
+
+The drag and drop functionality works seamlessly on touch-enabled devices (smartphones and tablets):
+
+**Features:**
+
+- **Touch Gestures**: Long press or drag to initiate drag operation
+- **Visual Ghost Element**: A semi-transparent copy of the node follows your finger during drag
+- **Auto-panning**: Works with touch gestures when dragging near screen edges
+- **Drop Zones**: Visual feedback shows valid/invalid drop targets
+- **Smooth Performance**: Optimized for 60fps touch interactions
+- **Hybrid Support**: Works on devices with both touch and mouse input
+
+**How it works:**
+
+1. Touch and hold a draggable node
+2. Start moving your finger - a ghost element appears after a small movement threshold (10px)
+3. The org chart auto-pans when you drag near the edges
+4. Valid drop targets show visual feedback (dashed outline)
+5. Invalid targets show a "not-allowed" indicator
+6. Release to drop, or drag outside to cancel
+
+**No configuration needed** - touch support is automatically enabled when `draggable` is set to `true`. All drag constraints (`canDragNode`, `canDropNode`) work identically for both mouse and touch input.
+
+**Example:**
+
+```typescript
+@Component({
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgData()"
+      [draggable]="true"
+      (nodeDrop)="onNodeDrop($event)"
+    />
+  `,
+})
+export class MyComponent {
+  // Works with both mouse and touch
+  onNodeDrop(event: { draggedNode: OrgChartNode; targetNode: OrgChartNode }) {
+    const updated = moveNode(
+      this.orgData(),
+      event.draggedNode.id,
+      event.targetNode.id
+    );
+    if (updated) {
+      this.orgData.set(updated);
+    }
+  }
+}
+```
 
 ### Drag Constraints & Validation
 
@@ -779,7 +831,6 @@ Control which nodes can be dragged and where they can be dropped using predicate
       [draggable]="true"
       [canDragNode]="canDragNode"
       [canDropNode]="canDropNode"
-      [dragEdgeThreshold]="100"
       [dragAutoPanSpeed]="20"
       (nodeDrop)="onNodeDrop($event)"
     />
@@ -835,8 +886,17 @@ export class MyComponent {
 
 **Auto-panning Configuration:**
 
-- `dragEdgeThreshold` (default: 150): Distance in pixels from viewport edge to trigger auto-pan
+The auto-pan threshold is **automatically calculated as 10% of the container dimensions**, making it responsive across all screen sizes:
+
+- **Small screens (mobile)**: Smaller activation zone prevents accidental auto-panning
+- **Large screens (desktop)**: Larger comfortable edge zones
+- **No configuration needed**: Works perfectly out of the box
+
+You can still customize the panning speed:
+
 - `dragAutoPanSpeed` (default: 15): Panning speed in pixels per frame
+
+> **Note**: The `dragEdgeThreshold` property is deprecated. The threshold is now dynamically calculated for optimal UX.
 
 ### Data Handling Pattern
 

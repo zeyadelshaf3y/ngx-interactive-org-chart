@@ -35,14 +35,14 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 - 🎯 **Interactive Pan & Zoom** - Smooth navigation with mouse/touch
 - 🌳 **Hierarchical Layout** - Perfect for organizational structures
 - 🎨 **Customizable Styling** - Fully themeable with CSS/SCSS
-- 📱 **Mobile Friendly** - Touch gestures support
+- 📱 **Mobile Friendly** - Touch gestures support for pan, zoom, and drag & drop
 - ⚡ **High Performance** - Optimized rendering
 - 🔍 **Searchable Nodes** - Easily find nodes in large charts
 - 🧭 **Smart Highlight & Focus** - Dynamically zoom to nodes with optimal sizing
 - 📊 **Custom Node Templates** - Use Angular templates for nodes
-- �️ **Drag & Drop** - Reorganize nodes with drag and drop support
+- 🖱️ **Drag & Drop** - Reorganize nodes with drag and drop (works on touch screens!)
 - 🎯 **Custom Drag Handles** - Use custom templates for drag handles
-- �📈 **Dynamic Data Binding** - Reactive updates with Angular signals
+- 📈 **Dynamic Data Binding** - Reactive updates with Angular signals
 - 📦 **Tree Shakable** - Import only what you need
 - 🔄 **Collapsible Nodes** - Expand/collapse functionality
 - 🌐 **RTL Support** - Right-to-left text direction
@@ -52,14 +52,14 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 - 🎪 **Angular 20+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
-## � Version Compatibility
+## 📋 Version Compatibility
 
 | ngx-interactive-org-chart | Angular Version | Notes           |
 | ------------------------- | --------------- | --------------- |
 | 1.1.4                     | Angular 19      | Stable release  |
 | 1.1.5+                    | Angular 20+     | Latest features |
 
-## �🚀 Usage
+## 🚀 Usage
 
 ### Basic Example
 
@@ -232,7 +232,7 @@ resetView() {
 | `draggable`                    | `boolean`                      | `false`      | Enable drag and drop functionality for nodes                       |
 | `canDragNode`                  | `(node) => boolean`            | `undefined`  | Predicate function to determine if a node can be dragged           |
 | `canDropNode`                  | `(dragged, target) => boolean` | `undefined`  | Predicate function to validate drop operations                     |
-| `dragEdgeThreshold`            | `number`                       | `150`        | Distance in pixels from edge to trigger auto-panning during drag   |
+| `dragEdgeThreshold`            | `number`                       | `0.1`        | Auto-pan threshold is calculated as 10% of container dimensions    |
 | `dragAutoPanSpeed`             | `number`                       | `15`         | Speed of auto-panning in pixels per frame during drag              |
 
 ## 🖱️ Drag & Drop
@@ -286,13 +286,14 @@ export class MyComponent {
 
 **Features:**
 
-- Auto-panning when dragging near edges (configurable speed and threshold)
+- **Responsive auto-panning** - Threshold automatically calculated as 10% of container (perfect for all screen sizes)
 - Drag constraints with `canDragNode` and `canDropNode` predicates
 - ESC key to cancel drag operation
 - Visual feedback for valid/invalid drop targets
 - Custom drag handle templates
 - Helper functions for tree manipulation (`moveNode`, `findNode`, `removeNode`, etc.)
 - Full control over data updates
+- **Touch screen support** - Works seamlessly on mobile devices and tablets
 
 For complete documentation, see the **[Library Documentation](./projects/ngx-interactive-org-chart/README.md)**.
 

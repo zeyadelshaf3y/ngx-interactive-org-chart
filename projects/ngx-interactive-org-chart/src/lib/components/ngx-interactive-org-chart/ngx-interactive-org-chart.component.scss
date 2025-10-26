@@ -515,3 +515,21 @@
     box-shadow: 0 0 0 0 var(--node-highlight-shadow-color);
   }
 }
+
+// Touch drag ghost element (rendered outside component in document body)
+:root {
+  .touch-drag-ghost-wrapper {
+    transition: none !important;
+    animation: none !important;
+
+    * {
+      pointer-events: none !important;
+      user-select: none !important;
+    }
+
+    .collapse-btn,
+    .drag-handle {
+      display: none !important;
+    }
+  }
+}
