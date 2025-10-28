@@ -29,6 +29,7 @@ import {
   updateTouchGhostPosition,
   setDesktopDragImage,
 } from '../../helpers';
+import { MiniMapComponent } from '../mini-map/mini-map.component';
 
 import createPanZoom, { PanZoom } from 'panzoom';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -59,7 +60,7 @@ interface TouchDragState<T> {
 @Component({
   standalone: true,
   selector: 'ngx-interactive-org-chart',
-  imports: [NgTemplateOutlet, NgClass, NgStyle],
+  imports: [NgTemplateOutlet, NgClass, NgStyle, MiniMapComponent],
   templateUrl: './ngx-interactive-org-chart.component.html',
   styleUrls: ['./ngx-interactive-org-chart.component.scss'],
   animations: [
@@ -195,6 +196,9 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
 
   private readonly orgChartContainer =
     viewChild.required<ElementRef<HTMLElement>>('orgChartContainer');
+
+  private readonly container =
+    viewChild.required<ElementRef<HTMLElement>>('container');
 
   /**
    * The data for the org chart.
@@ -339,6 +343,32 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   readonly themeOptions = input<NgxInteractiveOrgChartTheme>();
 
   /**
+   * Whether to show the mini map navigation tool.
+   * @default false
+   */
+  readonly showMiniMap = input<boolean>(false);
+
+  /**
+   * Position of the mini map on the screen.
+   * @default 'bottom-right'
+   */
+  readonly miniMapPosition = input<
+    'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  >('bottom-right');
+
+  /**
+   * Width of the mini map in pixels.
+   * @default 200
+   */
+  readonly miniMapWidth = input<number>(200);
+
+  /**
+   * Height of the mini map in pixels.
+   * @default 150
+   */
+  readonly miniMapHeight = input<number>(150);
+
+  /**
    * Event emitted when a node is dropped onto another node.
    * Provides the dragged node and the target node.
    */
@@ -378,6 +408,10 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
           ...this.defaultThemeOptions.container,
           ...themeOptions?.container,
         },
+        miniMap: {
+          ...this.defaultThemeOptions.miniMap,
+          ...themeOptions?.miniMap,
+        },
       };
     }
   );
@@ -409,6 +443,10 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   };
 
   protected panZoomInstance: PanZoom | null = null;
+
+  protected readonly containerElement = computed<HTMLElement | null>(() => {
+    return this.container()?.nativeElement || null;
+  });
 
   /**
    * A computed property that returns the current scale of the org chart.

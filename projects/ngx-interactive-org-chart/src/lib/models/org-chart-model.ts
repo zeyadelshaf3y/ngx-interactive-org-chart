@@ -52,6 +52,16 @@ interface OrgChartConfigTheme {
     readonly background: string;
     readonly border: string;
   };
+  readonly miniMap: {
+    readonly background: string;
+    readonly borderColor: string;
+    readonly borderRadius: string;
+    readonly shadow: string;
+    readonly nodeColor: string;
+    readonly viewportBackground: string;
+    readonly viewportBorderColor: string;
+    readonly viewportBorderWidth: string;
+  };
 }
 
 export type NgxInteractiveOrgChartTheme = DeepPartial<OrgChartConfigTheme>;

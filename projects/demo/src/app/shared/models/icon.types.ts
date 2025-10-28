@@ -22,4 +22,7 @@ export type IconType =
   | 'collapse'
   | 'clock'
   | 'center-h-v'
-  | 'drag-drop';
+  | 'drag-drop'
+  | 'map'
+  | 'eye'
+  | 'eye-slash';

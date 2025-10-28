@@ -1,0 +1,1 @@
+import{n as i}from"./chunk-ZA6ABTL3.js";import{$a as t,Ea as n}from"./chunk-WCBOQNJJ.js";var m=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=n({type:o,selectors:[["app-theming-customization"]],decls:1,vars:0,template:function(e,s){e&1&&t(0,"app-coming-soon")},dependencies:[i],encapsulation:2})};export{m as ThemingCustomizationComponent};
