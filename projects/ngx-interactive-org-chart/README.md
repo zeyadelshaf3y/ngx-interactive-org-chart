@@ -11,11 +11,11 @@ A beautiful, interactive organizational chart component for Angular applications
 ## ✨ Features
 
 - 🎯 **Interactive Pan & Zoom** - Smooth navigation with mouse/touch
-- 🗺️ **Mini Map Navigation** - Bird's-eye view with viewport indicator
+- 🗺️ **Mini Map Navigation** - Bird's-eye view with drag navigation and real-time viewport tracking
 - 🌳 **Hierarchical Layout** - Perfect for organizational structures
-- 🎨 **Customizable Styling** - Fully themeable with CSS/SCSS
+- 🎨 **Fully Themable** - Complete theme system including mini map customization with CSS variable support
 - 📱 **Mobile Friendly** - Touch gestures support
-- ⚡ **High Performance** - Optimized rendering
+- ⚡ **High Performance** - Optimized rendering with canvas-based mini map
 - 🔍 **Searchable Nodes** - Easily find nodes in large charts
 - 🧭 **Focus & Highlight** - Quickly navigate to specific nodes
 - 📊 **Custom Node Templates** - Use Angular templates for nodes
@@ -25,6 +25,7 @@ A beautiful, interactive organizational chart component for Angular applications
 - 📦 **Tree Shakable** - Import only what you need
 - 🔄 **Collapsible Nodes** - Expand/collapse functionality
 - 🌐 **RTL Support** - Right-to-left text direction
+- 🌓 **Dark Mode Ready** - Automatic theme detection and CSS variable resolution
 - 🧩 **Modular Design** - Standalone component for easy integration
 - 🔧 **TypeScript Support** - Full type definitions included
 - 🛠️ **Easy Setup** - Minimal configuration required
@@ -33,10 +34,11 @@ A beautiful, interactive organizational chart component for Angular applications
 
 ## 📋 Version Compatibility
 
-| ngx-interactive-org-chart | Angular Version | Notes           |
-| ------------------------- | --------------- | --------------- |
-| 1.1.4                     | Angular 19      | Stable release  |
-| 1.1.5+                    | Angular 20+     | Latest features |
+| ngx-interactive-org-chart | Angular Version | Notes                            |
+| ------------------------- | --------------- | -------------------------------- |
+| 1.1.4                     | Angular 19      | Stable release                   |
+| 1.2.x                     | Angular 20+     | Drag & drop, RTL support         |
+| 1.3.x                     | Angular 20+     | Mini map, dark mode, performance |
 
 ## 🚀 Installation
 
