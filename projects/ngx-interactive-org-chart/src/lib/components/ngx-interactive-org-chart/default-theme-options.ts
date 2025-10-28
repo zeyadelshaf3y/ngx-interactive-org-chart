@@ -42,4 +42,15 @@ export const DEFAULT_THEME_OPTIONS: NgxInteractiveOrgChartTheme = {
     background: 'transparent',
     border: 'none',
   },
+  miniMap: {
+    background: 'rgba(255, 255, 255, 0.95)',
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+    borderRadius: '8px',
+    shadow:
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    nodeColor: 'rgba(0, 0, 0, 0.6)',
+    viewportBackground: 'rgba(59, 130, 246, 0.2)',
+    viewportBorderColor: 'rgb(59, 130, 246)',
+    viewportBorderWidth: '2px',
+  },
 };

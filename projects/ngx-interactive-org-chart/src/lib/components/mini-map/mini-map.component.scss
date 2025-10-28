@@ -1,0 +1,57 @@
+:host {
+  display: contents;
+}
+
+.mini-map-container {
+  position: absolute;
+  z-index: 1000;
+  border: 2px solid;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 1 !important;
+  }
+
+  &.position-top-left {
+    top: 16px;
+    left: 16px;
+  }
+
+  &.position-top-right {
+    top: 16px;
+    right: 16px;
+  }
+
+  &.position-bottom-left {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  &.position-bottom-right {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+.mini-map-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viewport-indicator {
+  position: absolute;
+  border: 2px solid;
+  pointer-events: none;
+  border-radius: 2px;
+  transition: all 0.1s ease-out;
+  box-sizing: border-box;
+}

@@ -183,6 +183,7 @@
     max-height: 100%;
     width: 100%;
     overflow: hidden;
+    position: relative; // Added for mini map positioning
   }
 
   .node-container {

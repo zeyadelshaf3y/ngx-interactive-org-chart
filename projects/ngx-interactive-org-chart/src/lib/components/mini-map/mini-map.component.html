@@ -1,0 +1,11 @@
+@if (visible()) {
+  <div
+    class="mini-map-container"
+    [class]="'position-' + position()"
+    [ngStyle]="miniMapStyle()"
+    (mousedown)="onMouseDown($event)"
+  >
+    <canvas #miniMapCanvas class="mini-map-canvas"></canvas>
+    <div #viewport class="viewport-indicator" [ngStyle]="viewportIndicatorStyle()"></div>
+  </div>
+}

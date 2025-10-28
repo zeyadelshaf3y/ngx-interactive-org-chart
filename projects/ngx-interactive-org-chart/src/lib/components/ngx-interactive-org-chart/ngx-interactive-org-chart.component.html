@@ -1,4 +1,9 @@
-<section class="org-chart-container" [class.rtl]="isRtl()" (dragover)="onContainerDragOver($event)">
+<section
+  class="org-chart-container"
+  #container
+  [class.rtl]="isRtl()"
+  (dragover)="onContainerDragOver($event)"
+>
   <section class="org-chart" #panZoomContainer>
     @if (nodes()?.id) {
       <ul class="node-container">
@@ -9,6 +14,18 @@
       </ul>
     }
   </section>
+
+  <!-- Mini Map -->
+  @if (showMiniMap()) {
+    <ngx-org-chart-mini-map
+      [panZoomInstance]="panZoomInstance"
+      [chartContainer]="containerElement()"
+      [position]="miniMapPosition()"
+      [width]="miniMapWidth()"
+      [height]="miniMapHeight()"
+      [themeOptions]="finalThemeOptions().miniMap"
+    />
+  }
 </section>
 
 <ng-template #nodeTemplate let-node="node">

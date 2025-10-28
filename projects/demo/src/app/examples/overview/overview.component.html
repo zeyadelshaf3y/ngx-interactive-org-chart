@@ -42,6 +42,7 @@
       [themeOptions]="themeOptions"
       [layout]="orgChartLayout()"
       [draggable]="draggableEnabled()"
+      [showMiniMap]="miniMapEnabled()"
       (nodeDrop)="onNodeDrop($event)"
     >
       <ng-template #nodeTemplate let-node="node">

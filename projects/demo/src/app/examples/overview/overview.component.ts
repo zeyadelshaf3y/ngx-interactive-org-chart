@@ -81,12 +81,19 @@ export class OverviewComponent {
       activeColor: 'var(--text-primary)',
       color: 'var(--border-3)',
     },
+    miniMap: {
+      background: 'var(--bg-primary)',
+      borderColor: 'var(--border-2)',
+      nodeColor: 'var(--surface-muted)',
+    },
   };
 
   protected readonly orgChartLayout =
     signal<NgxInteractiveOrgChartLayout>('vertical');
 
   protected readonly draggableEnabled = signal<boolean>(false);
+
+  protected readonly miniMapEnabled = signal<boolean>(true);
 
   protected readonly toolbarButtons = computed<ToolbarButton[]>(() => {
     const isVerticalLayout = this.orgChartLayout() === 'vertical';
@@ -135,6 +142,11 @@ export class OverviewComponent {
           : 'Enable Drag & Drop',
         icon: 'drag-drop',
         onClick: () => this.draggableEnabled.update(v => !v),
+      },
+      {
+        label: this.miniMapEnabled() ? 'Hide Mini Map' : 'Show Mini Map',
+        icon: this.miniMapEnabled() ? 'eye-slash' : 'eye',
+        onClick: () => this.miniMapEnabled.update(v => !v),
       },
       {
         label: isVerticalLayout ? 'Switch to Horizontal' : 'Switch to Vertical',

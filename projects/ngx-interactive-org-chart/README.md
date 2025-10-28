@@ -11,6 +11,7 @@ A beautiful, interactive organizational chart component for Angular applications
 ## ✨ Features
 
 - 🎯 **Interactive Pan & Zoom** - Smooth navigation with mouse/touch
+- 🗺️ **Mini Map Navigation** - Bird's-eye view with viewport indicator
 - 🌳 **Hierarchical Layout** - Perfect for organizational structures
 - 🎨 **Customizable Styling** - Fully themeable with CSS/SCSS
 - 📱 **Mobile Friendly** - Touch gestures support
@@ -950,6 +951,174 @@ onNodeDrop(event: { draggedNode: OrgChartNode; targetNode: OrgChartNode }) {
   });
 }
 ```
+
+## 🗺️ Mini Map Navigation
+
+The component includes a built-in mini map feature for easy navigation of large organizational charts. The mini map provides a bird's-eye view of the entire chart with a viewport indicator showing your current position.
+
+### Basic Mini Map Setup
+
+```typescript
+import { Component } from '@angular/core';
+import { NgxInteractiveOrgChart } from 'ngx-interactive-org-chart';
+
+@Component({
+  selector: 'app-minimap-demo',
+  standalone: true,
+  imports: [NgxInteractiveOrgChart],
+  template: `
+    <ngx-interactive-org-chart
+      [data]="orgData"
+      [showMiniMap]="true"
+      [miniMapPosition]="'bottom-right'"
+      [miniMapWidth]="200"
+      [miniMapHeight]="150"
+    />
+  `,
+})
+export class MiniMapDemoComponent {
+  orgData = {
+    id: '1',
+    name: 'CEO',
+    children: [
+      /* ... your org chart data ... */
+    ],
+  };
+}
+```
+
+### Mini Map Configuration
+
+| Input             | Type                                                           | Default          | Description                        |
+| ----------------- | -------------------------------------------------------------- | ---------------- | ---------------------------------- |
+| `showMiniMap`     | `boolean`                                                      | `false`          | Enable/disable the mini map        |
+| `miniMapPosition` | `'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'bottom-right'` | Position of the mini map on screen |
+| `miniMapWidth`    | `number`                                                       | `200`            | Width of the mini map in pixels    |
+| `miniMapHeight`   | `number`                                                       | `150`            | Height of the mini map in pixels   |
+
+### Mini Map Features
+
+- **📊 Visual Overview**: Shows a simplified view of the entire organizational chart
+- **🎯 Viewport Indicator**: Blue rectangle shows your current visible area
+- **� Drag Navigation**: Drag the viewport indicator to smoothly pan the main chart
+- **🔄 Auto-Update**: Automatically updates when the chart structure changes
+- **🎨 Fully Themable**: Customizable through theme options with 8 configurable properties
+- **⚡ High Performance**: Optimized rendering with debounced updates
+
+### Example with All Options
+
+```typescript
+@Component({
+  selector: 'app-advanced-minimap',
+  standalone: true,
+  imports: [NgxInteractiveOrgChart],
+  template: `
+    <ngx-interactive-org-chart
+      [data]="largeOrgData"
+      [showMiniMap]="miniMapVisible()"
+      [miniMapPosition]="miniMapPosition()"
+      [miniMapWidth]="250"
+      [miniMapHeight]="180"
+      [themeOptions]="themeOptions"
+    />
+
+    <!-- Toggle button -->
+    <button (click)="toggleMiniMap()">
+      {{ miniMapVisible() ? 'Hide' : 'Show' }} Mini Map
+    </button>
+  `,
+})
+export class AdvancedMiniMapComponent {
+  miniMapVisible = signal(true);
+  miniMapPosition = signal<
+    'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  >('bottom-right');
+
+  largeOrgData = {
+    // ... large organizational chart data
+  };
+
+  themeOptions = {
+    // ... your theme options
+  };
+
+  toggleMiniMap() {
+    this.miniMapVisible.update(v => !v);
+  }
+}
+```
+
+### Mini Map Styling
+
+The mini map is fully themable through the `themeOptions` input. It automatically inherits and adapts to your chart's theme configuration:
+
+```typescript
+import { NgxInteractiveOrgChartTheme } from 'ngx-interactive-org-chart';
+
+const customTheme: NgxInteractiveOrgChartTheme = {
+  // ... other theme options
+  miniMap: {
+    background: 'rgba(255, 255, 255, 0.95)',
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+    borderRadius: '8px',
+    shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    nodeColor: 'rgba(0, 0, 0, 0.6)',
+    viewportBackground: 'rgba(59, 130, 246, 0.2)',
+    viewportBorderColor: 'rgb(59, 130, 246)',
+    viewportBorderWidth: '2px',
+  },
+};
+```
+
+#### Mini Map Theme Options
+
+| Property              | Type     | Default                     | Description                       |
+| --------------------- | -------- | --------------------------- | --------------------------------- |
+| `background`          | `string` | `rgba(255, 255, 255, 0.95)` | Background color of the mini map  |
+| `borderColor`         | `string` | `rgba(0, 0, 0, 0.15)`       | Border color of the mini map      |
+| `borderRadius`        | `string` | `8px`                       | Border radius of the mini map     |
+| `shadow`              | `string` | `0 4px 6px -1px rgba(...)`  | Box shadow of the mini map        |
+| `nodeColor`           | `string` | `rgba(0, 0, 0, 0.6)`        | Color of nodes in the mini map    |
+| `viewportBackground`  | `string` | `rgba(59, 130, 246, 0.2)`   | Background color of viewport area |
+| `viewportBorderColor` | `string` | `rgb(59, 130, 246)`         | Border color of viewport area     |
+| `viewportBorderWidth` | `string` | `2px`                       | Border width of viewport area     |
+
+You can also use CSS custom properties for additional customization:
+
+```scss
+::ng-deep ngx-org-chart-mini-map {
+  .mini-map-container {
+    // Override theme values with custom CSS
+    border-radius: 12px !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .viewport-indicator {
+    // Custom styling for the viewport indicator
+    border-width: 3px !important;
+  }
+}
+```
+
+### Performance Considerations
+
+The mini map is optimized for performance:
+
+- Uses HTML Canvas for efficient rendering
+- Debounced updates (100ms) to prevent excessive redraws
+- MutationObserver for smart DOM change detection
+- RequestAnimationFrame for smooth viewport tracking
+- Only redraws when necessary (chart changes, pan, zoom)
+
+### Use Cases
+
+The mini map is particularly useful for:
+
+- **Large Organizations**: Navigate charts with 50+ nodes
+- **Deep Hierarchies**: Quickly jump between different levels
+- **Complex Structures**: Overview of multi-department organizations
+- **Presentations**: Show context while focusing on specific areas
+- **User Onboarding**: Help users understand chart structure
 
 ## 🎨 Styling
 
