@@ -1,0 +1,1 @@
+import{n as p}from"./chunk-ZA6ABTL3.js";import{$a as t,Ea as n}from"./chunk-WCBOQNJJ.js";var s=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=n({type:o,selectors:[["app-basic"]],decls:1,vars:0,template:function(e,a){e&1&&t(0,"app-coming-soon")},dependencies:[p],encapsulation:2})};export{s as BasicComponent};
