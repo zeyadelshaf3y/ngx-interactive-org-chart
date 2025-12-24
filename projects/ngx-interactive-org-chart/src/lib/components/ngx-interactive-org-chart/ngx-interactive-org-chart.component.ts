@@ -87,56 +87,57 @@ interface TouchDragState<T> {
     ]),
   ],
   host: {
-    '[style.--node-background]': 'finalThemeOptions().node.background',
-    '[style.--node-color]': 'finalThemeOptions().node.color',
-    '[style.--node-shadow]': 'finalThemeOptions().node.shadow',
-    '[style.--node-outline-color]': 'finalThemeOptions().node.outlineColor',
-    '[style.--node-outline-width]': 'finalThemeOptions().node.outlineWidth',
+    '[style.--node-background]': 'finalThemeOptions().node!.background',
+    '[style.--node-color]': 'finalThemeOptions().node!.color',
+    '[style.--node-shadow]': 'finalThemeOptions().node!.shadow',
+    '[style.--node-outline-color]': 'finalThemeOptions().node!.outlineColor',
+    '[style.--node-outline-width]': 'finalThemeOptions().node!.outlineWidth',
     '[style.--node-active-outline-color]':
-      'finalThemeOptions().node.activeOutlineColor',
+      'finalThemeOptions().node!.activeOutlineColor',
     '[style.--node-highlight-shadow-color]':
-      'finalThemeOptions().node.highlightShadowColor',
-    '[style.--node-padding]': 'finalThemeOptions().node.padding',
-    '[style.--node-border-radius]': 'finalThemeOptions().node.borderRadius',
-    '[style.--node-active-color]': 'finalThemeOptions().node.activeColor',
-    '[style.--node-max-width]': 'finalThemeOptions().node.maxWidth',
-    '[style.--node-min-width]': 'finalThemeOptions().node.minWidth',
-    '[style.--node-max-height]': 'finalThemeOptions().node.maxHeight',
-    '[style.--node-min-height]': 'finalThemeOptions().node.minHeight',
+      'finalThemeOptions().node!.highlightShadowColor',
+    '[style.--node-padding]': 'finalThemeOptions().node!.padding',
+    '[style.--node-border-radius]': 'finalThemeOptions().node!.borderRadius',
+    '[style.--node-active-color]': 'finalThemeOptions().node!.activeColor',
+    '[style.--node-max-width]': 'finalThemeOptions().node!.maxWidth',
+    '[style.--node-min-width]': 'finalThemeOptions().node!.minWidth',
+    '[style.--node-max-height]': 'finalThemeOptions().node!.maxHeight',
+    '[style.--node-min-height]': 'finalThemeOptions().node!.minHeight',
     '[style.--node-drag-over-outline-color]':
-      'finalThemeOptions().node.dragOverOutlineColor',
-    '[style.--connector-color]': 'finalThemeOptions().connector.color',
+      'finalThemeOptions().node!.dragOverOutlineColor',
+    '[style.--connector-color]': 'finalThemeOptions().connector!.color',
     '[style.--connector-active-color]':
-      'finalThemeOptions().connector.activeColor',
+      'finalThemeOptions().connector!.activeColor',
     '[style.--connector-border-radius]':
-      'finalThemeOptions().connector.borderRadius',
+      'finalThemeOptions().connector!.borderRadius',
     '[style.--node-container-spacing]':
-      'finalThemeOptions().node.containerSpacing',
-    '[style.--connector-width]': 'finalThemeOptions().connector.width',
-    '[style.--collapse-button-size]': 'finalThemeOptions().collapseButton.size',
+      'finalThemeOptions().node!.containerSpacing',
+    '[style.--connector-width]': 'finalThemeOptions().connector!.width',
+    '[style.--collapse-button-size]':
+      'finalThemeOptions().collapseButton!.size',
     '[style.--collapse-button-border-color]':
-      'finalThemeOptions().collapseButton.borderColor',
+      'finalThemeOptions().collapseButton!.borderColor',
     '[style.--collapse-button-border-radius]':
-      'finalThemeOptions().collapseButton.borderRadius',
+      'finalThemeOptions().collapseButton!.borderRadius',
     '[style.--collapse-button-color]':
-      'finalThemeOptions().collapseButton.color',
+      'finalThemeOptions().collapseButton!.color',
     '[style.--collapse-button-background]':
-      'finalThemeOptions().collapseButton.background',
+      'finalThemeOptions().collapseButton!.background',
     '[style.--collapse-button-hover-color]':
-      'finalThemeOptions().collapseButton.hoverColor',
+      'finalThemeOptions().collapseButton!.hoverColor',
     '[style.--collapse-button-hover-background]':
-      'finalThemeOptions().collapseButton.hoverBackground',
+      'finalThemeOptions().collapseButton!.hoverBackground',
     '[style.--collapse-button-hover-shadow]':
-      'finalThemeOptions().collapseButton.hoverShadow',
+      'finalThemeOptions().collapseButton!.hoverShadow',
     '[style.--collapse-button-hover-transform-scale]':
-      'finalThemeOptions().collapseButton.hoverTransformScale',
+      'finalThemeOptions().collapseButton!.hoverTransformScale',
     '[style.--collapse-button-focus-outline]':
-      'finalThemeOptions().collapseButton.focusOutline',
+      'finalThemeOptions().collapseButton!.focusOutline',
     '[style.--collapse-button-count-font-size]':
-      'finalThemeOptions().collapseButton.countFontSize',
+      'finalThemeOptions().collapseButton!.countFontSize',
     '[style.--container-background]':
-      'finalThemeOptions().container.background',
-    '[style.--container-border]': 'finalThemeOptions().container.border',
+      'finalThemeOptions().container!.background',
+    '[style.--container-border]': 'finalThemeOptions().container!.border',
     '[attr.data-layout]': 'layout()',
   },
 })

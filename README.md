@@ -548,8 +548,8 @@ export class CustomOrgChartComponent {
 
 ## 📋 Requirements
 
-- Angular 20+
-- TypeScript 5.4+
+- Angular 21+
+- TypeScript 5.9+
 
 ## 🏗️ Development
 
@@ -560,11 +560,11 @@ git clone https://github.com/zeyadelshaf3y/ngx-interactive-org-chart.git
 # Install dependencies
 npm install
 
-# Start development server
-npm start
-
 # Build the library
 npm run build:lib
+
+# Start development server
+npm start
 
 # Run tests
 npm test
