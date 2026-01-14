@@ -61,6 +61,7 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 | 1.1.4                     | Angular 19      | Stable release                   |
 | 1.2.x                     | Angular 20+     | Drag & drop, RTL support         |
 | 1.3.x                     | Angular 20+     | Mini map, dark mode, performance |
+| 1.4.x                     | Angular 21+     | Latest features                  |
 
 ## 🚀 Usage
 
