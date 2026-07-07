@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.0] - Unreleased
 
+### Fixed
+
+- Double-clicking (or rapidly clicking) a collapse/expand button no longer
+  triggers panzoom's double-click-to-zoom, which caused the chart to zoom in a
+  step on repeated toggles. Double-click-to-zoom on the canvas is unchanged.
+
 ### Changed
 
 - **Requires Angular 22.** Peer dependencies bumped to `@angular/core` and

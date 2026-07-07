@@ -36,6 +36,9 @@ import { DEFAULT_THEME_OPTIONS } from './default-theme-options';
 
 // Constants
 const RESET_DELAY = 300; // ms
+// Window after a collapse/expand toggle during which a double-click is treated
+// as rapid button clicking and prevented from reaching panzoom's zoom handler.
+const COLLAPSE_DOUBLE_CLICK_GUARD_MS = 500;
 const TOUCH_DRAG_THRESHOLD = 10; // pixels
 const AUTO_PAN_EDGE_THRESHOLD = 0.1; // 10% of container dimensions
 const AUTO_PAN_SPEED = 15; // pixels per frame
@@ -494,7 +497,32 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.panZoomInstance?.on('zoom', e => {
       this.calculateScale();
     });
+
+    // Prevent panzoom's double-click-to-zoom from firing when the user rapidly
+    // clicks a collapse/expand button. panzoom listens for `dblclick` on its
+    // owner element; because toggling re-renders/re-layouts the node, the two
+    // clicks can land on different elements and the browser dispatches the
+    // `dblclick` against the container instead of the button — so filtering by
+    // target/position is unreliable. Instead, swallow the event (in the capture
+    // phase, above panzoom) when a collapse toggle happened moments earlier,
+    // which is exactly the rapid-click-on-button case.
+    this.#elementRef.nativeElement.addEventListener(
+      'dblclick',
+      this.#onCaptureDblClick,
+      { capture: true }
+    );
   }
+
+  #lastToggleTime = 0;
+
+  readonly #onCaptureDblClick = (event: MouseEvent): void => {
+    if (
+      performance.now() - this.#lastToggleTime <
+      COLLAPSE_DOUBLE_CLICK_GUARD_MS
+    ) {
+      event.stopPropagation();
+    }
+  };
 
   /**
    * Zooms in of the org chart.
@@ -671,6 +699,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     if (!this.collapsible()) {
       return;
     }
+
+    this.#lastToggleTime = performance.now();
 
     const nodeId = node.id as string;
     const wasCollapsed = node.collapsed;
@@ -1682,6 +1712,11 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopAutoPan();
     this.removeKeyboardListener();
+    this.#elementRef.nativeElement.removeEventListener(
+      'dblclick',
+      this.#onCaptureDblClick,
+      { capture: true }
+    );
     this.panZoomInstance?.dispose();
   }
 
