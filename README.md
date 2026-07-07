@@ -560,16 +560,16 @@ export class CustomOrgChartComponent {
 git clone https://github.com/zeyadelshaf3y/ngx-interactive-org-chart.git
 
 # Install dependencies
-npm install
+pnpm install
 
 # Build the library
-npm run build:lib
+pnpm build:lib
 
 # Start development server
-npm start
+pnpm start
 
 # Run tests
-npm test
+pnpm test
 ```
 
 ## 📄 License
