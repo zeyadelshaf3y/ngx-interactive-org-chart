@@ -6,7 +6,6 @@ import {
   viewChild,
   ElementRef,
   afterNextRender,
-  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   NgxInteractiveOrgChart,
@@ -34,11 +33,9 @@ interface ToolbarButton {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-overview',
   imports: [NgxInteractiveOrgChart, IconComponent, ButtonComponent],
   templateUrl: './overview.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent {

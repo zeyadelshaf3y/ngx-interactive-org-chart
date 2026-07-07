@@ -1,18 +1,11 @@
 import { NgClass } from '@angular/common';
-import {
-  Component,
-  computed,
-  input,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { IconColor, IconSize, IconType } from '../../models';
 
 @Component({
-  standalone: true,
   selector: 'app-icon',
   imports: [NgClass],
   templateUrl: './icon.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./icon.component.scss'],
 })
 export class IconComponent {

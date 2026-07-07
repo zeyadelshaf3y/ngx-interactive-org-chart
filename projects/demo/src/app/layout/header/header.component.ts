@@ -1,9 +1,4 @@
-import {
-  Component,
-  input,
-  output,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {
   ButtonComponent,
   IconComponent,
@@ -11,11 +6,9 @@ import {
 } from '../../shared';
 
 @Component({
-  standalone: true,
   selector: 'app-header',
   imports: [ButtonComponent, IconComponent, MiniThemeSwitchComponent],
   templateUrl: './header.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {

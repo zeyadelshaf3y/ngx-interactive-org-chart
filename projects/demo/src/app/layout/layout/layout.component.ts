@@ -1,21 +1,13 @@
-import {
-  Component,
-  computed,
-  inject,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { HeaderComponent } from '../header';
 import { SidebarComponent } from '../sidebar';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from '../../shared';
 
 @Component({
-  standalone: true,
   selector: 'app-layout',
   imports: [HeaderComponent, SidebarComponent, RouterOutlet],
   templateUrl: './layout.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent {

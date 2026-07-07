@@ -11,7 +11,6 @@ import {
   signal,
   viewChild,
   OnDestroy,
-  ChangeDetectionStrategy,
 } from '@angular/core';
 import { PanZoom } from 'panzoom';
 
@@ -60,10 +59,8 @@ const CSS_VAR_REGEX = /var\((--[^)]+)\)/;
 
 @Component({
   selector: 'ngx-org-chart-mini-map',
-  standalone: true,
   imports: [NgStyle],
   templateUrl: './mini-map.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./mini-map.component.scss'],
 })
 export class MiniMapComponent implements OnDestroy {

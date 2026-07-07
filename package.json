@@ -35,8 +35,7 @@
     "panzoom": "^9.4.4",
     "rxjs": "~7.8.0",
     "svg-sprite": "^2.0.4",
-    "tslib": "^2.3.0",
-    "zone.js": "^0.16.2"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^22.0.5",

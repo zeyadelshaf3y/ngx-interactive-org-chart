@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { NgxInteractiveOrgChart } from './ngx-interactive-org-chart.component';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 import { OrgChartNode } from '../../models';
 
 @Component({
   template: `<ngx-interactive-org-chart [data]="testData" />`,
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgxInteractiveOrgChart],
 })
 class TestHostComponent<T> {
