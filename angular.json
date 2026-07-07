@@ -25,10 +25,10 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/ngx-interactive-org-chart/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
+            "runner": "vitest"
           }
         }
       }
@@ -105,22 +105,6 @@
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
-        },
-        "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
-            "tsConfig": "projects/demo/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "projects/demo/public"
-              }
-            ],
-            "styles": ["projects/demo/src/styles.scss"],
-            "scripts": []
-          }
         }
       }
     }
