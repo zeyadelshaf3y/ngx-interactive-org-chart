@@ -555,6 +555,14 @@ export class CustomOrgChartComponent {
 
 ## 🏗️ Development
 
+This project uses [pnpm](https://pnpm.io). Enable it via Corepack (bundled with Node.js 16.13+):
+
+```bash
+corepack enable
+# or install it globally
+npm i -g pnpm
+```
+
 ```bash
 # Clone the repository
 git clone https://github.com/zeyadelshaf3y/ngx-interactive-org-chart.git

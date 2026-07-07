@@ -53,6 +53,21 @@ npm install ngx-interactive-org-chart
 > longer need to provide `provideAnimations()` / `BrowserAnimationsModule` or
 > install `@angular/animations`.
 
+### Upgrading from 1.4.x to 1.5.x
+
+There are **no breaking API changes** — the component's inputs, outputs, and
+selector are unchanged. Only two things to do:
+
+1. **Upgrade to Angular 22** (this version requires `@angular/core` and
+   `@angular/common` `^22.0.0`).
+2. **Remove the animations provider.** `provideAnimations()` /
+   `BrowserAnimationsModule` are no longer needed by this library. If nothing
+   else in your app uses Angular animations, you can also drop the
+   `@angular/animations` dependency.
+
+The library is now `OnPush` and fully signal-based, so it is compatible with
+zoneless applications (`provideZonelessChangeDetection()`).
+
 ## 📖 Usage
 
 ### Basic Example
