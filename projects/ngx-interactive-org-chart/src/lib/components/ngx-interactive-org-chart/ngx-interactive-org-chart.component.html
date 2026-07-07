@@ -110,7 +110,8 @@
         [class.collapsed]="node.collapsed"
         [class.instant-animation]="true"
         [attr.aria-hidden]="node.collapsed"
-        @toggleNode
+        animate.enter="oc-toggle-enter"
+        animate.leave="oc-toggle-leave"
       >
         @for (child of node.children; track child.id) {
           @if (!child.hidden) {

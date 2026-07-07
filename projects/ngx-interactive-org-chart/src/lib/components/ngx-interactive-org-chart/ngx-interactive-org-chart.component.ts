@@ -32,7 +32,6 @@ import {
 import { MiniMapComponent } from '../mini-map/mini-map.component';
 
 import createPanZoom, { PanZoom } from 'panzoom';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { DEFAULT_THEME_OPTIONS } from './default-theme-options';
 
 // Constants
@@ -63,29 +62,6 @@ interface TouchDragState<T> {
   imports: [NgTemplateOutlet, NgClass, NgStyle, MiniMapComponent],
   templateUrl: './ngx-interactive-org-chart.component.html',
   styleUrls: ['./ngx-interactive-org-chart.component.scss'],
-  animations: [
-    trigger('toggleNode', [
-      transition(':enter', [
-        style({ width: '0', height: '0', opacity: 0, transform: 'scale(0.8)' }),
-        animate(
-          '300ms ease-out',
-          style({ width: '*', height: '*', opacity: 1, transform: 'scale(1)' })
-        ),
-      ]),
-      transition(':leave', [
-        style({ width: '*', height: '*' }),
-        animate(
-          '300ms ease-out',
-          style({
-            width: '0',
-            height: '0',
-            opacity: 0,
-            transform: 'scale(0.8)',
-          })
-        ),
-      ]),
-    ]),
-  ],
   host: {
     '[style.--node-background]': 'finalThemeOptions().node!.background',
     '[style.--node-color]': 'finalThemeOptions().node!.color',

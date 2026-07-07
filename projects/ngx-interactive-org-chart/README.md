@@ -40,6 +40,7 @@ A beautiful, interactive organizational chart component for Angular applications
 | 1.2.x                     | Angular 20+     | Drag & drop, RTL support         |
 | 1.3.x                     | Angular 20+     | Mini map, dark mode, performance |
 | 1.4.x                     | Angular 21+     | Latest features                  |
+| 1.5.x                     | Angular 21+     | Native animations (no deps)      |
 
 ## 🚀 Installation
 
@@ -47,38 +48,10 @@ A beautiful, interactive organizational chart component for Angular applications
 npm install ngx-interactive-org-chart
 ```
 
-### Setup Angular Animations
-
-The component uses Angular animations for smooth transitions. Add the animations module to your `main.ts`:
-
-```typescript
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { AppComponent } from './app/app.component';
-
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideAnimations(), // Required for ngx-interactive-org-chart
-    // ... your other providers
-  ],
-});
-```
-
-Or if you're using NgModules:
-
-```typescript
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-@NgModule({
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule, // Required for ngx-interactive-org-chart
-    // ... your other modules
-  ],
-  // ...
-})
-export class AppModule {}
-```
+> **No extra setup required.** Since v1.5.0 the component uses Angular's
+> native `animate.enter` / `animate.leave` for smooth transitions, so you no
+> longer need to provide `provideAnimations()` / `BrowserAnimationsModule` or
+> install `@angular/animations`.
 
 ## 📖 Usage
 

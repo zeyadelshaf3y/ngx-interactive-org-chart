@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { NgxInteractiveOrgChart } from './ngx-interactive-org-chart.component';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { Component } from '@angular/core';
 import { OrgChartNode } from '../../models';
 
@@ -26,7 +25,6 @@ describe('NgxInteractiveOrgChart', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TestHostComponent],
-      providers: [provideAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
