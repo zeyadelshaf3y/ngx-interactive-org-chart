@@ -22,7 +22,7 @@
             [title]="button?.title ?? ''"
           >
             <div class="overview__toolbar-button">
-              <app-icon [name]="button?.icon" size="small" />
+              <app-icon [name]="$safeNavigationMigration(button?.icon)" size="small" />
               @if (button?.label) {
                 <span class="overview__toolbar-button-label">{{ button?.label }}</span>
               }
@@ -46,7 +46,7 @@
       (nodeDrop)="onNodeDrop($event)"
     >
       <ng-template #nodeTemplate let-node="node">
-        @let nodeData = node?.data;
+        @let nodeData = $safeNavigationMigration(node?.data);
 
         @switch (true) {
           @case (
@@ -57,7 +57,7 @@
 
             <section class="overview__employee">
               <section class="overview__employee-thumbnail">
-                <img [src]="nodeData?.thumbnail" />
+                <img [src]="$safeNavigationMigration(nodeData?.thumbnail)" />
               </section>
               <section class="overview__employee-details">
                 <span class="overview__employee-details-name">{{ nodeData?.name }}</span>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ComingSoonComponent } from '../../shared';
 
 @Component({
@@ -6,6 +6,7 @@ import { ComingSoonComponent } from '../../shared';
   selector: 'app-basic',
   imports: [ComingSoonComponent],
   templateUrl: './basic.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./basic.component.scss'],
 })
 export class BasicComponent {}

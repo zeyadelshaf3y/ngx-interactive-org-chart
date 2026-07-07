@@ -1,4 +1,9 @@
-import { Component, input, model } from '@angular/core';
+import {
+  Component,
+  input,
+  model,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { IconComponent } from '../icon';
 import { FormsModule } from '@angular/forms';
 import { IconSize } from '../../models';
@@ -8,6 +13,7 @@ import { IconSize } from '../../models';
   selector: 'app-mini-theme-switch',
   imports: [IconComponent, FormsModule],
   templateUrl: './mini-theme-switch.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './mini-theme-switch.component.scss',
 })
 export class MiniThemeSwitchComponent {

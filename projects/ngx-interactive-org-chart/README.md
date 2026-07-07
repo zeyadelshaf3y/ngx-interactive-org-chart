@@ -29,7 +29,7 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🧩 **Modular Design** - Standalone component for easy integration
 - 🔧 **TypeScript Support** - Full type definitions included
 - 🛠️ **Easy Setup** - Minimal configuration required
-- 🎪 **Angular 20+** - Built with latest Angular features
+- 🎪 **Angular 22+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
 ## 📋 Version Compatibility
@@ -40,7 +40,7 @@ A beautiful, interactive organizational chart component for Angular applications
 | 1.2.x                     | Angular 20+     | Drag & drop, RTL support         |
 | 1.3.x                     | Angular 20+     | Mini map, dark mode, performance |
 | 1.4.x                     | Angular 21+     | Latest features                  |
-| 1.5.x                     | Angular 21+     | Native animations (no deps)      |
+| 1.5.x                     | Angular 22+     | Native animations, Angular 22    |
 
 ## 🚀 Installation
 
@@ -956,9 +956,7 @@ export class MiniMapDemoComponent {
   orgData = {
     id: '1',
     name: 'CEO',
-    children: [
-      /* ... your org chart data ... */
-    ],
+    children: [/* ... your org chart data ... */],
   };
 }
 ```

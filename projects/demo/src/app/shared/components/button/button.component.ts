@@ -1,4 +1,10 @@
-import { Component, computed, input, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ButtonSeverity, ButtonSize, ButtonVariant } from '../../models';
 import { NgClass } from '@angular/common';
 import { IconComponent } from '../icon';
@@ -8,6 +14,7 @@ import { IconComponent } from '../icon';
   selector: 'app-button',
   imports: [NgClass, IconComponent],
   templateUrl: './button.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './button.component.scss',
 })
 export class ButtonComponent {

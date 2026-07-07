@@ -15,6 +15,7 @@ import {
   signal,
   TemplateRef,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   NgxInteractiveOrgChartLayout,
@@ -62,6 +63,7 @@ interface TouchDragState<T> {
   imports: [NgTemplateOutlet, NgClass, NgStyle, MiniMapComponent],
   templateUrl: './ngx-interactive-org-chart.component.html',
   styleUrls: ['./ngx-interactive-org-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   host: {
     '[style.--node-background]': 'finalThemeOptions().node!.background',
     '[style.--node-color]': 'finalThemeOptions().node!.color',

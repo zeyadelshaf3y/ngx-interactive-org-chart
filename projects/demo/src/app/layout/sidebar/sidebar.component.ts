@@ -1,4 +1,9 @@
-import { Component, input, output } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import {
   ButtonComponent,
   DemoRoutes,
@@ -28,6 +33,7 @@ export interface SidebarItem {
     MiniThemeSwitchComponent,
   ],
   templateUrl: './sidebar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
