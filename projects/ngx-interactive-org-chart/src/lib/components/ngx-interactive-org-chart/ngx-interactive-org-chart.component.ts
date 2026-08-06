@@ -511,6 +511,11 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       this.#onCaptureDblClick,
       { capture: true }
     );
+    this.#elementRef.nativeElement.addEventListener(
+      'click',
+      this.#onCaptureClick,
+      { capture: true }
+    );
   }
 
   #lastToggleTime = 0;
@@ -521,6 +526,16 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
       COLLAPSE_DOUBLE_CLICK_GUARD_MS
     ) {
       event.stopPropagation();
+    }
+  };
+
+  // Arms the same guard for buttons rendered inside custom node templates
+  // (e.g. a host app with `collapsible=false` and its own expand buttons):
+  // the first click of a rapid pair reliably lands on the real <button> before
+  // any re-render, so a following dblclick is swallowed by #onCaptureDblClick.
+  readonly #onCaptureClick = (event: MouseEvent): void => {
+    if ((event.target as HTMLElement).closest?.('button')) {
+      this.#lastToggleTime = performance.now();
     }
   };
 
@@ -1715,6 +1730,11 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.#elementRef.nativeElement.removeEventListener(
       'dblclick',
       this.#onCaptureDblClick,
+      { capture: true }
+    );
+    this.#elementRef.nativeElement.removeEventListener(
+      'click',
+      this.#onCaptureClick,
       { capture: true }
     );
     this.panZoomInstance?.dispose();

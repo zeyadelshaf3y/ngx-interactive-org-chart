@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Double-clicking (or rapidly clicking) a collapse/expand button no longer
   triggers panzoom's double-click-to-zoom, which caused the chart to zoom in a
   step on repeated toggles. Double-click-to-zoom on the canvas is unchanged.
+  The guard also covers buttons rendered inside custom node templates (e.g. a
+  host app using `collapsible=false` with its own expand buttons).
 
 ### Changed
 
