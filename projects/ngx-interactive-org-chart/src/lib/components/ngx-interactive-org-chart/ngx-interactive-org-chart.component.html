@@ -107,9 +107,7 @@
       <ul
         class="node-container"
         [id]="getNodeChildrenId(node.id)"
-        [class.collapsed]="node.collapsed"
-        [class.instant-animation]="true"
-        [attr.aria-hidden]="node.collapsed"
+        [class.oc-toggle-skip]="!toggleAnimationsReady()"
         animate.enter="oc-toggle-enter"
         animate.leave="oc-toggle-leave"
       >
