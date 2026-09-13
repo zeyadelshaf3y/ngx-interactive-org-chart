@@ -32,11 +32,13 @@ import {
 import { MiniMapComponent } from '../mini-map/mini-map.component';
 
 import createPanZoom, { PanZoom } from 'panzoom';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { DEFAULT_THEME_OPTIONS } from './default-theme-options';
 
 // Constants
 const RESET_DELAY = 300; // ms
+// Window after a collapse/expand toggle during which a double-click is treated
+// as rapid button clicking and prevented from reaching panzoom's zoom handler.
+const COLLAPSE_DOUBLE_CLICK_GUARD_MS = 500;
 const TOUCH_DRAG_THRESHOLD = 10; // pixels
 const AUTO_PAN_EDGE_THRESHOLD = 0.1; // 10% of container dimensions
 const AUTO_PAN_SPEED = 15; // pixels per frame
@@ -58,34 +60,10 @@ interface TouchDragState<T> {
 }
 
 @Component({
-  standalone: true,
   selector: 'ngx-interactive-org-chart',
   imports: [NgTemplateOutlet, NgClass, NgStyle, MiniMapComponent],
   templateUrl: './ngx-interactive-org-chart.component.html',
   styleUrls: ['./ngx-interactive-org-chart.component.scss'],
-  animations: [
-    trigger('toggleNode', [
-      transition(':enter', [
-        style({ width: '0', height: '0', opacity: 0, transform: 'scale(0.8)' }),
-        animate(
-          '300ms ease-out',
-          style({ width: '*', height: '*', opacity: 1, transform: 'scale(1)' })
-        ),
-      ]),
-      transition(':leave', [
-        style({ width: '*', height: '*' }),
-        animate(
-          '300ms ease-out',
-          style({
-            width: '0',
-            height: '0',
-            opacity: 0,
-            transform: 'scale(0.8)',
-          })
-        ),
-      ]),
-    ]),
-  ],
   host: {
     '[style.--node-background]': 'finalThemeOptions().node!.background',
     '[style.--node-color]': 'finalThemeOptions().node!.color',
@@ -519,7 +497,47 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     this.panZoomInstance?.on('zoom', e => {
       this.calculateScale();
     });
+
+    // Prevent panzoom's double-click-to-zoom from firing when the user rapidly
+    // clicks a collapse/expand button. panzoom listens for `dblclick` on its
+    // owner element; because toggling re-renders/re-layouts the node, the two
+    // clicks can land on different elements and the browser dispatches the
+    // `dblclick` against the container instead of the button — so filtering by
+    // target/position is unreliable. Instead, swallow the event (in the capture
+    // phase, above panzoom) when a collapse toggle happened moments earlier,
+    // which is exactly the rapid-click-on-button case.
+    this.#elementRef.nativeElement.addEventListener(
+      'dblclick',
+      this.#onCaptureDblClick,
+      { capture: true }
+    );
+    this.#elementRef.nativeElement.addEventListener(
+      'click',
+      this.#onCaptureClick,
+      { capture: true }
+    );
   }
+
+  #lastToggleTime = 0;
+
+  readonly #onCaptureDblClick = (event: MouseEvent): void => {
+    if (
+      performance.now() - this.#lastToggleTime <
+      COLLAPSE_DOUBLE_CLICK_GUARD_MS
+    ) {
+      event.stopPropagation();
+    }
+  };
+
+  // Arms the same guard for buttons rendered inside custom node templates
+  // (e.g. a host app with `collapsible=false` and its own expand buttons):
+  // the first click of a rapid pair reliably lands on the real <button> before
+  // any re-render, so a following dblclick is swallowed by #onCaptureDblClick.
+  readonly #onCaptureClick = (event: MouseEvent): void => {
+    if ((event.target as HTMLElement).closest?.('button')) {
+      this.#lastToggleTime = performance.now();
+    }
+  };
 
   /**
    * Zooms in of the org chart.
@@ -696,6 +714,8 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
     if (!this.collapsible()) {
       return;
     }
+
+    this.#lastToggleTime = performance.now();
 
     const nodeId = node.id as string;
     const wasCollapsed = node.collapsed;
@@ -1707,6 +1727,16 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopAutoPan();
     this.removeKeyboardListener();
+    this.#elementRef.nativeElement.removeEventListener(
+      'dblclick',
+      this.#onCaptureDblClick,
+      { capture: true }
+    );
+    this.#elementRef.nativeElement.removeEventListener(
+      'click',
+      this.#onCaptureClick,
+      { capture: true }
+    );
     this.panZoomInstance?.dispose();
   }
 

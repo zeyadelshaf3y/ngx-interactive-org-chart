@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { NgxInteractiveOrgChart } from './ngx-interactive-org-chart.component';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { Component } from '@angular/core';
 import { OrgChartNode } from '../../models';
 
@@ -26,7 +25,6 @@ describe('NgxInteractiveOrgChart', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TestHostComponent],
-      providers: [provideAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
@@ -45,5 +43,34 @@ describe('NgxInteractiveOrgChart', () => {
 
   it('should have collapsible enabled by default', () => {
     expect(component.collapsible()).toBe(true);
+  });
+
+  describe('double-click zoom guard', () => {
+    let chartHost: HTMLElement;
+    let button: HTMLButtonElement;
+
+    beforeEach(() => {
+      chartHost = fixture.debugElement.children[0].nativeElement;
+      button = document.createElement('button');
+      chartHost.appendChild(button);
+    });
+
+    it('should swallow a dblclick right after a button inside the chart was clicked', () => {
+      button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      const dblClick = new MouseEvent('dblclick', { bubbles: true });
+      const stopPropagationSpy = vi.spyOn(dblClick, 'stopPropagation');
+      button.dispatchEvent(dblClick);
+
+      expect(stopPropagationSpy).toHaveBeenCalled();
+    });
+
+    it('should not swallow a dblclick on the canvas without a preceding button click', () => {
+      const dblClick = new MouseEvent('dblclick', { bubbles: true });
+      const stopPropagationSpy = vi.spyOn(dblClick, 'stopPropagation');
+      chartHost.dispatchEvent(dblClick);
+
+      expect(stopPropagationSpy).not.toHaveBeenCalled();
+    });
   });
 });

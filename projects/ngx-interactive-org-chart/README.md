@@ -29,7 +29,7 @@ A beautiful, interactive organizational chart component for Angular applications
 - 🧩 **Modular Design** - Standalone component for easy integration
 - 🔧 **TypeScript Support** - Full type definitions included
 - 🛠️ **Easy Setup** - Minimal configuration required
-- 🎪 **Angular 20+** - Built with latest Angular features
+- 🎪 **Angular 22+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
 ## 📋 Version Compatibility
@@ -40,6 +40,7 @@ A beautiful, interactive organizational chart component for Angular applications
 | 1.2.x                     | Angular 20+     | Drag & drop, RTL support         |
 | 1.3.x                     | Angular 20+     | Mini map, dark mode, performance |
 | 1.4.x                     | Angular 21+     | Latest features                  |
+| 1.5.x                     | Angular 22+     | Native animations, Angular 22    |
 
 ## 🚀 Installation
 
@@ -47,38 +48,25 @@ A beautiful, interactive organizational chart component for Angular applications
 npm install ngx-interactive-org-chart
 ```
 
-### Setup Angular Animations
+> **No extra setup required.** Since v1.5.0 the component uses Angular's
+> native `animate.enter` / `animate.leave` for smooth transitions, so you no
+> longer need to provide `provideAnimations()` / `BrowserAnimationsModule` or
+> install `@angular/animations`.
 
-The component uses Angular animations for smooth transitions. Add the animations module to your `main.ts`:
+### Upgrading from 1.4.x to 1.5.x
 
-```typescript
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { AppComponent } from './app/app.component';
+There are **no breaking API changes** — the component's inputs, outputs, and
+selector are unchanged. Only two things to do:
 
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideAnimations(), // Required for ngx-interactive-org-chart
-    // ... your other providers
-  ],
-});
-```
+1. **Upgrade to Angular 22** (this version requires `@angular/core` and
+   `@angular/common` `^22.0.0`).
+2. **Remove the animations provider.** `provideAnimations()` /
+   `BrowserAnimationsModule` are no longer needed by this library. If nothing
+   else in your app uses Angular animations, you can also drop the
+   `@angular/animations` dependency.
 
-Or if you're using NgModules:
-
-```typescript
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-@NgModule({
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule, // Required for ngx-interactive-org-chart
-    // ... your other modules
-  ],
-  // ...
-})
-export class AppModule {}
-```
+The library is now `OnPush` and fully signal-based, so it is compatible with
+zoneless applications (`provideZonelessChangeDetection()`).
 
 ## 📖 Usage
 
@@ -983,9 +971,7 @@ export class MiniMapDemoComponent {
   orgData = {
     id: '1',
     name: 'CEO',
-    children: [
-      /* ... your org chart data ... */
-    ],
+    children: [/* ... your org chart data ... */],
   };
 }
 ```

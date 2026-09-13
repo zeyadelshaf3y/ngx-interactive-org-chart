@@ -5,7 +5,6 @@ import { RouterOutlet } from '@angular/router';
 import { ThemeService } from '../../shared';
 
 @Component({
-  standalone: true,
   selector: 'app-layout',
   imports: [HeaderComponent, SidebarComponent, RouterOutlet],
   templateUrl: './layout.component.html',

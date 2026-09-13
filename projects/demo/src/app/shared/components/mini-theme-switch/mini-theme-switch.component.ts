@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { IconSize } from '../../models';
 
 @Component({
-  standalone: true,
   selector: 'app-mini-theme-switch',
   imports: [IconComponent, FormsModule],
   templateUrl: './mini-theme-switch.component.html',

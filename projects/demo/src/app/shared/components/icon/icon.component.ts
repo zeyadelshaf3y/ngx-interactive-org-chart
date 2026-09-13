@@ -3,7 +3,6 @@ import { Component, computed, input } from '@angular/core';
 import { IconColor, IconSize, IconType } from '../../models';
 
 @Component({
-  standalone: true,
   selector: 'app-icon',
   imports: [NgClass],
   templateUrl: './icon.component.html',

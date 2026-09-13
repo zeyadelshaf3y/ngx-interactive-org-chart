@@ -17,7 +17,6 @@ export interface SidebarItem {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-sidebar',
   imports: [
     IconComponent,

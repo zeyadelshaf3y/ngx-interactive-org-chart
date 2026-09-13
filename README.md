@@ -51,7 +51,7 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 - 🧩 **Modular Design** - Standalone component for easy integration
 - 🔧 **TypeScript Support** - Full type definitions included
 - 🛠️ **Easy Setup** - Minimal configuration required
-- 🎪 **Angular 20+** - Built with latest Angular features
+- 🎪 **Angular 22+** - Built with latest Angular features
 - 🆓 **100% Free** - Open source MIT license
 
 ## 📋 Version Compatibility
@@ -62,6 +62,7 @@ For detailed documentation, installation guide, and API reference, see the **[Li
 | 1.2.x                     | Angular 20+     | Drag & drop, RTL support         |
 | 1.3.x                     | Angular 20+     | Mini map, dark mode, performance |
 | 1.4.x                     | Angular 21+     | Latest features                  |
+| 1.5.x                     | Angular 22+     | Native animations, Angular 22    |
 
 ## 🚀 Usage
 
@@ -549,26 +550,34 @@ export class CustomOrgChartComponent {
 
 ## 📋 Requirements
 
-- Angular 21+
-- TypeScript 5.9+
+- Angular 22+
+- TypeScript 6.0+
 
 ## 🏗️ Development
+
+This project uses [pnpm](https://pnpm.io). Enable it via Corepack (bundled with Node.js 16.13+):
+
+```bash
+corepack enable
+# or install it globally
+npm i -g pnpm
+```
 
 ```bash
 # Clone the repository
 git clone https://github.com/zeyadelshaf3y/ngx-interactive-org-chart.git
 
 # Install dependencies
-npm install
+pnpm install
 
 # Build the library
-npm run build:lib
+pnpm build:lib
 
 # Start development server
-npm start
+pnpm start
 
 # Run tests
-npm test
+pnpm test
 ```
 
 ## 📄 License

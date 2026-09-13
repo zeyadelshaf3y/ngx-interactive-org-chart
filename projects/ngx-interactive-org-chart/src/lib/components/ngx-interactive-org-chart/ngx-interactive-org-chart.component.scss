@@ -458,6 +458,39 @@
   }
 }
 
+// Node children container enter/leave (native animate.enter / animate.leave)
+.oc-toggle-enter {
+  animation: ocToggleNodeEnter var(--collapse-duration) ease-out;
+}
+
+.oc-toggle-leave {
+  animation: ocToggleNodeLeave var(--collapse-duration) ease-out;
+}
+
+@keyframes ocToggleNodeEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ocToggleNodeLeave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
 @keyframes lineAppearX {
   from {
     opacity: 0;
@@ -497,6 +530,11 @@
           animation: none;
         }
       }
+    }
+
+    .oc-toggle-enter,
+    .oc-toggle-leave {
+      animation: none;
     }
 
     .collapse-btn {

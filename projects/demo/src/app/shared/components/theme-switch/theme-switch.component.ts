@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../icon';
 
 @Component({
-  standalone: true,
   selector: 'app-theme-switch',
   imports: [FormsModule, IconComponent],
   templateUrl: './theme-switch.component.html',

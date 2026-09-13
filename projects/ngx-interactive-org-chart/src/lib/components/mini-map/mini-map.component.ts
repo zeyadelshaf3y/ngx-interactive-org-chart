@@ -15,10 +15,7 @@ import {
 import { PanZoom } from 'panzoom';
 
 export type MiniMapPosition =
-  | 'top-left'
-  | 'top-right'
-  | 'bottom-left'
-  | 'bottom-right';
+  'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 export interface MiniMapTheme {
   readonly background?: string;
@@ -62,7 +59,6 @@ const CSS_VAR_REGEX = /var\((--[^)]+)\)/;
 
 @Component({
   selector: 'ngx-org-chart-mini-map',
-  standalone: true,
   imports: [NgStyle],
   templateUrl: './mini-map.component.html',
   styleUrls: ['./mini-map.component.scss'],

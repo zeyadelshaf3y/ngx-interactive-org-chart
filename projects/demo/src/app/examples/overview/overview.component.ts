@@ -33,7 +33,6 @@ interface ToolbarButton {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-overview',
   imports: [NgxInteractiveOrgChart, IconComponent, ButtonComponent],
   templateUrl: './overview.component.html',

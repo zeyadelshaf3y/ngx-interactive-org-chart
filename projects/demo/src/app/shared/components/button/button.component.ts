@@ -4,7 +4,6 @@ import { NgClass } from '@angular/common';
 import { IconComponent } from '../icon';
 
 @Component({
-  standalone: true,
   selector: 'app-button',
   imports: [NgClass, IconComponent],
   templateUrl: './button.component.html',

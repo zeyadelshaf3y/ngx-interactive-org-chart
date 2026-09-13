@@ -6,7 +6,6 @@ import {
 } from '../../shared';
 
 @Component({
-  standalone: true,
   selector: 'app-header',
   imports: [ButtonComponent, IconComponent, MiniThemeSwitchComponent],
   templateUrl: './header.component.html',
