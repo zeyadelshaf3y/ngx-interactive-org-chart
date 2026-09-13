@@ -1,0 +1,1 @@
+import {S as Se,a9 as Np,t as ee}from'./main-C7ML2JBU.js';var p=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=Se({type:o,selectors:[["app-basic"]],decls:1,vars:0,template:function(e,i){e&1&&ee(0,"app-coming-soon");},dependencies:[Np],encapsulation:2})};export{p as BasicComponent};
