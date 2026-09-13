@@ -466,6 +466,12 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initiatePanZoom();
     this.disableChildDragging();
+    afterNextRender(
+      () => {
+        requestAnimationFrame(() => this.toggleAnimationsReady.set(true));
+      },
+      { injector: this.#injector }
+    );
   }
 
   /**
@@ -519,6 +525,9 @@ export class NgxInteractiveOrgChart<T> implements AfterViewInit, OnDestroy {
   }
 
   #lastToggleTime = 0;
+
+  /** Skips enter width/height animation on the initial tree paint. */
+  protected readonly toggleAnimationsReady = signal(true);
 
   readonly #onCaptureDblClick = (event: MouseEvent): void => {
     if (

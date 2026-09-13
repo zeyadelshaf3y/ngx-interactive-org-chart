@@ -1,5 +1,6 @@
 :host {
-  --collapse-duration: 0.3s;
+  --collapse-duration: 0.4s;
+  --collapse-scale: 0.55;
   --base-delay: 100ms;
   --animation-duration: 0.5s;
 
@@ -196,22 +197,9 @@
     );
     padding-inline-start: 0;
     position: relative;
-    opacity: 1;
-    transition:
-      max-height var(--collapse-duration) ease,
-      opacity var(--collapse-duration) ease,
-      padding var(--collapse-duration) ease,
-      width var(--collapse-duration) ease;
-
     box-sizing: border-box;
     margin: 0 auto;
     min-width: 0;
-
-    &.collapsed {
-      max-height: 0;
-      opacity: 0;
-      padding-block-start: 0;
-    }
 
     &:first-child {
       padding-block-start: 0.5rem;
@@ -458,36 +446,102 @@
   }
 }
 
-// Node children container enter/leave (native animate.enter / animate.leave)
+// Animate ul.node-container size + opacity + scale on expand/collapse.
+// Opacity fades on a separate, earlier timeline so it's visible before
+// width/height clipping hides the content.
+.oc-toggle-enter,
+.oc-toggle-leave {
+  overflow: hidden;
+  interpolate-size: allow-keywords;
+  min-width: 0;
+  min-height: 0;
+}
+
+:host[data-layout="vertical"] {
+  .oc-toggle-enter,
+  .oc-toggle-leave {
+    transform-origin: top center;
+  }
+}
+
+:host[data-layout="horizontal"] {
+  .oc-toggle-enter,
+  .oc-toggle-leave {
+    transform-origin: left center;
+  }
+
+  .rtl .oc-toggle-enter,
+  .rtl .oc-toggle-leave {
+    transform-origin: right center;
+  }
+}
+
 .oc-toggle-enter {
-  animation: ocToggleNodeEnter var(--collapse-duration) ease-out;
+  animation:
+    ocToggleEnterSize var(--collapse-duration) cubic-bezier(0.22, 1, 0.36, 1)
+      both,
+    ocToggleEnterFade var(--collapse-duration) linear both;
 }
 
 .oc-toggle-leave {
-  animation: ocToggleNodeLeave var(--collapse-duration) ease-out;
+  animation:
+    ocToggleLeaveSize var(--collapse-duration) cubic-bezier(0.4, 0, 0.2, 1) both,
+    ocToggleLeaveFade var(--collapse-duration) linear both;
 }
 
-@keyframes ocToggleNodeEnter {
+.node-container.oc-toggle-skip.oc-toggle-enter {
+  animation: none;
+}
+
+@keyframes ocToggleEnterSize {
   from {
-    opacity: 0;
-    transform: scale(0.8);
+    width: 0;
+    height: 0;
+    transform: scale(var(--collapse-scale));
   }
 
   to {
-    opacity: 1;
+    width: auto;
+    height: auto;
     transform: scale(1);
   }
 }
 
-@keyframes ocToggleNodeLeave {
+@keyframes ocToggleLeaveSize {
   from {
-    opacity: 1;
+    width: auto;
+    height: auto;
     transform: scale(1);
   }
 
   to {
+    width: 0;
+    height: 0;
+    transform: scale(var(--collapse-scale));
+  }
+}
+
+@keyframes ocToggleEnterFade {
+  from {
     opacity: 0;
-    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ocToggleLeaveFade {
+  0% {
+    opacity: 1;
+  }
+
+  25% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
   }
 }
 
@@ -522,8 +576,6 @@
     --collapse-duration: 0ms;
 
     .node-container {
-      transition: none;
-
       .node-container {
         &::before {
           opacity: 1;
